@@ -114,7 +114,7 @@ export default defineComponent({
       let apiUrl
       try {
         apiUrl = `${
-          process?.env?.VIDEO_API || 'https://subber-api.herokuapp.com'
+          process.env.VIDEO_API || 'https://subber-api.herokuapp.com'
         }/v1/videos`
       } catch (err) {
         console.error(err)
