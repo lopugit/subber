@@ -1,0 +1,62 @@
+{
+  "name": "subber",
+  "version": "0.0.1",
+  "description": "Subber YouTube Organizer",
+  "productName": "Subber",
+  "author": "Nikolaj Frey nikolaj@alopu.com",
+  "private": true,
+  "scripts": {
+    "lint": "eslint --ext .js,.vue ./",
+    "dev.dev": "npm run stop.dev ; npm run start.dev",
+    "stop.dev": "pm2 delete ecosystem.config.js --name subber-dev",
+    "start.dev": "pm2 start ecosystem.config.js --name subber-dev",
+    "buildTailwind": "npx tailwindcss -i ./src/css/tailwind.input.css -o ./src/css/tailwind.output.css",
+    "test": "echo \"No test specified\" && exit 0"
+  },
+  "dependencies": {
+    "@nuxtjs/eslint-config": "^6.0.0",
+    "@nuxtjs/eslint-module": "^3.0.2",
+    "@prettier/plugin-pug": "^1.19.0",
+    "@quasar/extras": "^1.0.0",
+    "axios": "^0.21.1",
+    "babel-eslint": "^10.1.0",
+    "core-js": "^3.6.5",
+    "dotenv": "^10.0.0",
+    "eslint": "^7.22.0",
+    "eslint-config-prettier": "^8.1.0",
+    "eslint-plugin-nuxt": "^2.0.0",
+    "eslint-plugin-prettier": "^3.3.1",
+    "eslint-plugin-vue": "^7.7.0",
+    "prettier": "^2.2.1",
+    "pug": "^3.0.2",
+    "pug-plain-loader": "^1.1.0",
+    "quasar": "^2.0.0",
+    "tailwindcss": "^3.0.7",
+    "vuex": "^4.0.1",
+    "vuex-persistedstate": "^4.1.0"
+  },
+  "devDependencies": {
+    "@babel/eslint-parser": "^7.13.14",
+    "@quasar/app": "^3.0.0",
+    "eslint": "^7.14.0",
+    "eslint-config-prettier": "^8.1.0",
+    "eslint-plugin-vue": "^7.0.0",
+    "eslint-webpack-plugin": "^2.4.0"
+  },
+  "browserslist": [
+    "last 10 Chrome versions",
+    "last 10 Firefox versions",
+    "last 4 Edge versions",
+    "last 7 Safari versions",
+    "last 8 Android versions",
+    "last 8 ChromeAndroid versions",
+    "last 8 FirefoxAndroid versions",
+    "last 10 iOS versions",
+    "last 5 Opera versions"
+  ],
+  "engines": {
+    "node": ">= 12.22.1",
+    "npm": ">= 6.13.4",
+    "yarn": ">= 1.21.1"
+  }
+}
