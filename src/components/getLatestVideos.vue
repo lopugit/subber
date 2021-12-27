@@ -111,9 +111,15 @@ export default defineComponent({
   mounted() {},
   methods: {
     async searchVideos() {
-      const apiUrl = `${
-        process?.env?.VIDEO_API || 'https://subber-api.herokuapp.com/'
-      }/v1/videos`
+      let apiUrl
+      try {
+        apiUrl = `${
+          process?.env?.VIDEO_API || 'https://subber-api.herokuapp.com'
+        }/v1/videos`
+      } catch (err) {
+        console.error(err)
+        apiUrl = 'https://subber-api.herokuapp.com/v1/videos'
+      }
 
       this.loading = true
 
