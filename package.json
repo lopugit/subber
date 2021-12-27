@@ -12,6 +12,7 @@
     "start.dev": "pm2 start ecosystem.config.js --name subber-dev",
     "build": "npx quasar build",
     "start": "npx quasar serve dist/spa",
+    "heroku-postbuild": "npm run build",
     "buildTailwind": "npx tailwindcss -i ./src/css/tailwind.input.css -o ./src/css/tailwind.output.css",
     "test": "echo \"No test specified\" && exit 0"
   },
