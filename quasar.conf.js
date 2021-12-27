@@ -6,7 +6,7 @@
 // Configuration for your app
 // https://quasar.dev/quasar-cli/quasar-conf-js
 
-const env = require('dotenv').config().parsed
+const env = require('dotenv').config().parsed || {}
 
 /* eslint-env node */
 const ESLintPlugin = require('eslint-webpack-plugin')
