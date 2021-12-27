@@ -10,8 +10,8 @@
     "dev.dev": "npm run stop.dev ; npm run start.dev",
     "stop.dev": "pm2 delete ecosystem.config.js --name subber-dev",
     "start.dev": "pm2 start ecosystem.config.js --name subber-dev",
-    "build": "quasar build",
-    "start": "quasar serve dist/spa",
+    "build": "npx quasar build",
+    "start": "npx quasar serve dist/spa",
     "buildTailwind": "npx tailwindcss -i ./src/css/tailwind.input.css -o ./src/css/tailwind.output.css",
     "test": "echo \"No test specified\" && exit 0"
   },
@@ -19,6 +19,7 @@
     "@nuxtjs/eslint-config": "^6.0.0",
     "@nuxtjs/eslint-module": "^3.0.2",
     "@prettier/plugin-pug": "^1.19.0",
+    "@quasar/cli": "^1.2.2",
     "@quasar/extras": "^1.0.0",
     "axios": "^0.21.1",
     "babel-eslint": "^10.1.0",
