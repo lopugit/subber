@@ -137,6 +137,7 @@ export default defineComponent({
       this.loading = false
 
       console.log('Got resp', resp)
+      console.log('Got resp.data', resp.data)
       console.log('Got videos', resp?.data?.videos)
 
       if (resp && resp.data.videos) {
