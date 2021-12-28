@@ -1,6 +1,6 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
+    <q-header class="header">
       <q-toolbar>
         <!-- <q-btn
           flat
@@ -11,7 +11,7 @@
           @click="toggleLeftDrawer"
         /> -->
 
-        <q-toolbar-title> Subber </q-toolbar-title>
+        <q-toolbar-title class="text-bold"> Subber </q-toolbar-title>
 
         <div>The best app for finding your favourite content</div>
       </q-toolbar>
@@ -56,3 +56,7 @@ export default defineComponent({
   },
 })
 </script>
+<style lang="sass">
+.header
+  background: #202020
+</style>

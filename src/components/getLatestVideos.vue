@@ -9,17 +9,23 @@
   .search-container.pt-12
     template(v-for='(playlistId, idx) in playlistIds')
       .input-container.pt-12
-        q-input(v-model='playlistIds[idx]', filled, outlined, dark)
+        q-input(
+          v-model='playlistIds[idx]',
+          filled,
+          outlined,
+          dark,
+          placeholder='Enter a YouTube Channel ID'
+        )
           template(v-slot:append)
             q-icon.cursor-pointer(
               name='cancel',
               @click='deletePlaylistId(idx)'
             )
     .add-playlistId-button.pt-12
-      q-btn.full-width(color='secondary', @click='addPlaylistId')
+      q-btn.full-width(color='primary', @click='addPlaylistId')
         q-icon(name='add')
-    .search-videos-button.pt-12
-      q-btn.full-width(color='primary', @click='searchVideos')
+    .search-videos-button.pt-24
+      q-btn.full-width(color='secondary', @click='searchVideos')
         | {{ loading ? 'Searching' : 'Search' }}
         q-spinner(
           :style=`{
@@ -30,11 +36,18 @@
           size='1.5em'
         )
 
-    .suggestions-container.pt-12
+    .suggestions-container.pt-24
+      p Some suggestions
+      .pt-12
       template(v-for='suggestion in suggestions')
-        q-btn(color='primary', @click='addPlaylistIds(suggestion[1])')
+        q-btn(color='accent', @click='addPlaylistIds(suggestion[1])')
           | {{ suggestion[0] }}
-  .results-container.pt-12
+    .error-container.pt-24(v-if='error')
+      q-banner.bg-negative(color='error', rounded, inline-actions)
+        | {{ error }}
+        template(v-slot:action)
+          q-btn(flat, label='Dismiss', @click='error = undefined')
+  .results-container.pt-24
     .results.pt-12(v-if='results.length') {{ results.length }} Results
     template(v-for='video in results')
       .result-container
@@ -63,11 +76,12 @@ export default defineComponent({
   data() {
     return {
       loading: ref(false),
+      error: ref(undefined),
       suggestions: ref([
         [
           'Simon Whistler Empire',
           [
-            'ToptenzNettop10',
+            'UCQ-hpFPF4nOKoKPEAZM_THw', // Top Tenz Net
             'UC3Wn3dABlgESm8Bzn8Vamgg', // side projects
             'UCp1tsmksyf6TgKFMdt8-05Q', // casual criminilist
             'UCf-U0uPVQZtcqXUWa_Hl4Mw', // into the shadows
@@ -111,6 +125,7 @@ export default defineComponent({
   mounted() {},
   methods: {
     async searchVideos() {
+      this.error = false
       let apiUrl
       try {
         apiUrl = `${
@@ -137,13 +152,18 @@ export default defineComponent({
       this.loading = false
 
       console.log('Got resp', resp)
-      console.log('Got resp.data', resp.data)
-      console.log('Got videos', resp?.data?.videos)
 
-      if (resp && resp.data.videos) {
+      if (resp && resp.data?.videos) {
+        console.log('Got resp.data', resp.data)
+        console.log('Got videos', resp?.data?.videos)
         this.results = resp.data.videos
       } else {
+        console.log('No resp.data')
         this.results = []
+      }
+
+      if (resp?.data?.error) {
+        this.error = resp.data.error
       }
     },
     addPlaylistIds(playlistIds) {
@@ -157,7 +177,7 @@ export default defineComponent({
       clearTimeout(this.timeout)
       this.timeout = setTimeout(() => {
         this.searchVideos()
-      }, 500)
+      }, 300)
       this.$store.commit('subber/deletePlaylistId', idx)
     },
   },
