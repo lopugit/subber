@@ -9,5 +9,5 @@ app.use(enforce.HTTPS({ trustProtoHeader: true }))
 app.listen(port)
 
 app.get('*', (req, res) => {
-  res.redirect('https://ytsubber.com')
+  res.redirect('https://ytsubber.com' + req.path)
 })
