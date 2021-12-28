@@ -1,26 +1,4 @@
-# Quasar App (subber)
+# Subber
+[![Netlify Status](https://api.netlify.com/api/v1/badges/bee6e9ab-f7d2-4f49-ab4b-a20b90651805/deploy-status)](https://app.netlify.com/sites/subber/deploys)
 
-A Quasar Framework app
-
-## Install the dependencies
-```bash
-npm install
-```
-
-### Start the app in development mode (hot-code reloading, error reporting, etc.)
-```bash
-quasar dev
-```
-
-### Lint the files
-```bash
-npm run lint
-```
-
-### Build the app for production
-```bash
-quasar build
-```
-
-### Customize the configuration
-See [Configuring quasar.conf.js](https://quasar.dev/quasar-cli/quasar-conf-js).
+A web app for creating custom YouTube subscription feeds
