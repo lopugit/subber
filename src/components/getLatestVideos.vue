@@ -22,7 +22,7 @@
               @click='deletePlaylistId(idx)'
             )
     .add-playlistId-button.pt-12
-      q-btn.full-width(color='primary', @click='addPlaylistId')
+      q-btn.full-width(color='accent', @click='addPlaylistId')
         q-icon(name='add')
     .search-videos-button.pt-24
       q-btn.full-width(color='secondary', @click='searchVideos')

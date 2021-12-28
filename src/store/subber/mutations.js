@@ -11,5 +11,9 @@ export function addPlaylistId(state, idx) {
 }
 
 export function addPlaylistIds(state, idxs) {
-  state.playlistIds.push(...idxs)
+  idxs.forEach((idx) => {
+    if (!state.playlistIds.includes(idx)) {
+      state.playlistIds.push(idx)
+    }
+  })
 }
