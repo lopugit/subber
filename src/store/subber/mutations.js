@@ -17,3 +17,7 @@ export function addPlaylistIds(state, idxs) {
     }
   })
 }
+
+export function clearPlaylistIds(state) {
+  state.playlistIds = []
+}

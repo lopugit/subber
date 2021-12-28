@@ -1,71 +1,94 @@
 <template lang="pug">
-.latest-vids-container.pt-12(
+.latest-vids-positioner(
   :style=`{
-    padding: '0px 8px',
-    maxWidth: '100%',
-    width: '600px'
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    width: '100%'
   }`
 )
-  .search-container.pt-12
-    template(v-for='(playlistId, idx) in playlistIds')
-      .input-container.pt-12
-        q-input(
-          v-model='playlistIds[idx]',
-          filled,
-          outlined,
-          dark,
-          placeholder='Enter a YouTube Channel ID'
+  .latest-vids-container.pt-12(
+    :style=`{
+      padding: '0px 8px',
+      maxWidth: '100%',
+      width: '600px'
+    }`
+  )
+    .search-container.pt-12
+      .suggestion-search.pt-12(v-if='suggestion')
+        .text-h4.text-center(rounded)
+          | {{ suggestion }}
+      template(v-else)
+        .clear-container(
+          v-if='playlistIds.length',
+          style='display: flex; width: 100%; justify-content: flex-end'
         )
-          template(v-slot:append)
-            q-icon.cursor-pointer(
-              name='cancel',
-              @click='deletePlaylistId(idx)'
+          q-btn(color='primary', @click='clearPlaylistIds') Clear
+        template(v-for='(playlistId, idx) in playlistIds')
+          .input-container.pt-12
+            q-input(
+              v-model='playlistIds[idx]',
+              filled,
+              outlined,
+              dark,
+              placeholder='Enter a YouTube Channel ID'
             )
-    .add-playlistId-button.pt-12
-      q-btn.full-width(color='accent', @click='addPlaylistId')
-        q-icon(name='add')
-    .search-videos-button.pt-24
-      q-btn.full-width(color='secondary', @click='searchVideos')
-        | {{ loading ? 'Searching' : 'Search' }}
-        q-spinner(
-          :style=`{
-          marginLeft: '10px'
-        }`,
-          v-if='loading',
-          color='tertiary',
-          size='1.5em'
-        )
+              template(v-slot:append)
+                q-icon.cursor-pointer(
+                  name='cancel',
+                  @click='deletePlaylistId(idx)'
+                )
+        .add-playlistId-button.pt-12
+          q-btn.full-width(color='accent', @click='addPlaylistId')
+            q-icon(name='add')
+        .search-videos-button.pt-24
+          q-btn.full-width(color='secondary', @click='searchVideos')
+            | {{ loading ? 'Searching' : 'Search' }}
+            q-spinner(
+              :style=`{
+              marginLeft: '10px'
+            }`,
+              v-if='loading',
+              color='tertiary',
+              size='1.5em'
+            )
 
-    .suggestions-container.pt-24
-      p Some suggestions
-      .pt-12
-      template(v-for='suggestion in suggestions')
-        q-btn(color='accent', @click='addPlaylistIds(suggestion[1])')
-          | {{ suggestion[0] }}
-    .error-container.pt-24(v-if='error')
-      q-banner.bg-negative(color='error', rounded, inline-actions)
-        | {{ error }}
-        template(v-slot:action)
-          q-btn(flat, label='Dismiss', @click='error = undefined')
-  .results-container.pt-24
-    .results.pt-12(v-if='results.length') {{ results.length }} Results
-    template(v-for='video in results')
-      .result-container
-        br
-        a(
-          :href='"https://www.youtube.com/watch?v=" + video.contentDetails.videoId',
-          target='_blank'
-        )
-          img(
-            :src='video.snippet.thumbnails.maxres?.url || video.snippet.thumbnails.high?.url || video.snippet.thumbnails.standard?.url'
+        .suggestions-container.pt-24
+          p Some suggestions
+          .pt-12
+          template(v-for='suggestion in suggestions')
+            q-btn(
+              style='margin-right: 12px',
+              color='accent',
+              @click='addPlaylistIds(suggestion[1])'
+            )
+              | {{ suggestion[0] }}
+      .error-container.pt-24(v-if='error')
+        q-banner.bg-negative(color='error', rounded, inline-actions)
+          | {{ error }}
+          template(v-slot:action)
+            q-btn(flat, label='Dismiss', @click='error = undefined')
+    .results-container.pt-24
+      .results.pt-12(v-if='results.length') {{ results.length }} Results
+      template(v-for='video in results')
+        .result-container
+          br
+          a(
+            :href='"https://www.youtube.com/watch?v=" + video.contentDetails.videoId',
+            target='_blank'
           )
-          .title(:style=`{
-              fontSize: '24px'
-            }`)
-            span {{ video.snippet.title }}
-            span(:style=`{
-              paddingLeft: '8px'
-            }`) - {{ video.snippet.videoOwnerChannelTitle }}
+            img(
+              :src='video.snippet.thumbnails.maxres?.url || video.snippet.thumbnails.high?.url || video.snippet.thumbnails.standard?.url'
+            )
+            .title(:style=`{
+                fontSize: '24px'
+              }`)
+              span {{ video.snippet.title }}
+              span(
+                :style=`{
+                paddingLeft: '8px'
+              }`
+              ) - {{ video.snippet.videoOwnerChannelTitle }}
 </template>
 
 <script>
@@ -73,32 +96,34 @@ import { defineComponent, ref } from 'vue'
 
 export default defineComponent({
   name: 'GetLatestVideos',
+  props: {
+    presetMode: {
+      type: Boolean,
+      default: false,
+    },
+    suggestion: {
+      type: String,
+      default: undefined,
+    },
+  },
   data() {
     return {
       loading: ref(false),
       error: ref(undefined),
-      suggestions: ref([
-        [
-          'Simon Whistler Empire',
-          [
-            'UCQ-hpFPF4nOKoKPEAZM_THw', // Top Tenz Net
-            'UC3Wn3dABlgESm8Bzn8Vamgg', // side projects
-            'UCp1tsmksyf6TgKFMdt8-05Q', // casual criminilist
-            'UCf-U0uPVQZtcqXUWa_Hl4Mw', // into the shadows
-            'UCVH8lH7ZLDUe_d9mZ3dlyYQ', // xplrd
-            'UCnb-VTwBHEV3gtiB9di9DZQ', // highlight history
-            'TodayIFoundOut', // today I found out
-            'UCYY5GWf7MHFJ6DZeHreoXgw', // brain blaze
-            'UCHKRfxkMTqiiv4pF99qGKIw', // geographics
-            'UClnDI2sdehVm1zm_LmUHsjQ', // biographics
-            'UC0woBco6Dgcxt0h8SwyyOmw', // Mega projects
-            'UC9h8BDcXwkhZtnqoQJ7PggA', // warographics
-          ],
-        ],
-      ]),
     }
   },
   computed: {
+    suggestions: {
+      get() {
+        return this.$store.state.subber.suggestions
+      },
+      set(val) {
+        this.$store.commit('subber/thing', {
+          key: 'suggestions',
+          val,
+        })
+      },
+    },
     results: {
       get() {
         return this.$store.state.subber.results
@@ -122,8 +147,18 @@ export default defineComponent({
       },
     },
   },
-  mounted() {},
+  mounted() {
+    if (this.presetMode) {
+      this.playlistIds = (this.suggestions.find(
+        (s) => s[0] === this.suggestion
+      ) || ['', []])[1]
+    }
+    this.searchVideos()
+  },
   methods: {
+    clearPlaylistIds() {
+      this.$store.commit('subber/clearPlaylistIds')
+    },
     async searchVideos() {
       this.error = false
       let apiUrl

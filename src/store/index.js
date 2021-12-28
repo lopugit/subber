@@ -12,7 +12,12 @@ import subber from './subber'
  * with the Store instance.
  */
 
-// window.localStorage.setItem('vuex', JSON.stringify({ subber: {} }))
+const currentStoreVersion = window.localStorage.getItem('storeVersion')
+const storeVersion = 3
+if (!currentStoreVersion || currentStoreVersion < storeVersion) {
+  window.localStorage.setItem('vuex', JSON.stringify({ subber: {} }))
+  window.localStorage.setItem('storeVersion', storeVersion)
+}
 
 export default store(function (/* { ssrContext } */) {
   const Store = createStore({
