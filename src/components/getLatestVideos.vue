@@ -69,10 +69,9 @@
           template(v-slot:action)
             q-btn(flat, label='Dismiss', @click='error = undefined')
     .results-container.pt-24
-      .results.pt-12(v-if='results.length') {{ results.length }} Results
+      .results.pt-12.pb-12(v-if='results.length') {{ results.length }} Results
       template(v-for='video in results')
-        .result-container
-          br
+        .result-container.pb-36
           a(
             :href='"https://www.youtube.com/watch?v=" + video.contentDetails.videoId',
             target='_blank'
@@ -80,15 +79,19 @@
             img(
               :src='video.snippet.thumbnails.maxres?.url || video.snippet.thumbnails.high?.url || video.snippet.thumbnails.standard?.url'
             )
-            .title(:style=`{
-                fontSize: '24px'
-              }`)
+            .title(
+              :style=`{
+                paddingTop: '4px',
+                fontSize: '20px',
+                fontWeight: 500
+              }`
+            )
               span {{ video.snippet.title }}
               span(
                 :style=`{
                 paddingLeft: '8px'
               }`
-              ) - {{ video.snippet.videoOwnerChannelTitle }}
+              ) | {{ video.snippet.videoOwnerChannelTitle }}
 </template>
 
 <script>
