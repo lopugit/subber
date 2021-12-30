@@ -161,6 +161,7 @@ export default defineComponent({
   methods: {
     clearPlaylistIds() {
       this.$store.commit('subber/clearPlaylistIds')
+      this.searchVideos()
     },
     async searchVideos() {
       this.error = false
