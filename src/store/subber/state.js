@@ -30,6 +30,7 @@ export default function () {
           'UCFE9IFdVxGKF9Z9Q9kMNwWA', // xQc Gaming
           'UCfOt0I2aha1GfgNTbIY50xg', // Everything xQc
           'darKsPeeD191', // The Saga of xQc
+          'UCsmHdkSvpx3XHM0wgGqLYGA', // Daily Copium Dose
         ],
       ],
     ],
