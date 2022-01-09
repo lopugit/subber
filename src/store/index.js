@@ -15,12 +15,12 @@ import subber from './subber'
 const currentStoreVersion = window.localStorage.getItem('storeVersion')
 const storeVersion = 8
 if (!currentStoreVersion || currentStoreVersion < storeVersion) {
-  const store = JSON.parse(window.localStorage.getItem('vuex'))
+  const store = JSON.parse(window.localStorage.getItem('vuex')) || {}
   window.localStorage.setItem(
     'vuex',
     JSON.stringify({
       subber: {
-        playlistIds: store.subber.playlistIds,
+        playlistIds: store && store.subber && store.subber.playlistIds,
       },
     })
   )
