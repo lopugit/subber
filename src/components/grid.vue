@@ -11,7 +11,7 @@
       )
   template(v-for='(video, idx) in videos')
     result(v-if='idx < idxLimit', :video='video')
-  .load-more(v-if='videos.length > idxLimit')
+  .load-more.mobile-spacing(v-if='videos.length > idxLimit')
     q-btn.full-width(color='secondary', @click='idxLimit += 5') Load More
 </template>
 <script>

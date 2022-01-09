@@ -5,9 +5,8 @@ q-page.flex(
     alignItems: 'center'
   }`
 )
-  .privacy-policy-container(
+  .privacy-policy-container.mobile-spacing(
     :style=`{
-        padding: '0px 8px',
         textAlign: 'center',
         width: '480px',
         maxWidth: '100%'

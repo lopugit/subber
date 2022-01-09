@@ -13,9 +13,7 @@
       width: '600px'
     }`
   )
-    .search-container.pt-12(:style=`{
-        padding: '0px 8px',
-      }`)
+    .search-container.pt-12.mobile-spacing
       .suggestion-search.pt-12.flex.flex-col(v-if='suggestion')
         .text-h4.text-center(style='font-weight: 700')
           | {{ suggestion }}
