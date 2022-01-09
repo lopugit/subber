@@ -20,10 +20,9 @@ q-page.flex(
         }`
       )
         | Privacy Policy
-      p.subtitle
+      .subtitle
         | The friendly Subber Privacy Policy
-      .pt-12
-      p.answer
+      .answer
         .pt-12 This API Client uses YouTube API Services
         .pt-12 Subber uses Google Analytics Tag Manager to track page views, clicks, and scroll events. This data is only stored in Google servers and Google Analytics servers, there is no custom user data tracking done or stored anywhere outside Google servers.
         .pt-12 User data is collected about the user's device such as Country, City, Browser, OS, and model
