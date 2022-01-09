@@ -22,10 +22,12 @@
 
   </head>
   <body>
-    <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-N52GP9W"
-    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-    <!-- End Google Tag Manager (noscript) -->
+    <% if (htmlWebpackPlugin.options.templateParameters.process.env.ENV !== 'dev') { %>
+      <!-- Google Tag Manager (noscript) -->
+      <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-N52GP9W"
+      height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+      <!-- End Google Tag Manager (noscript) -->
+    <% } %>
     <!-- DO NOT touch the following DIV -->
     <div id="q-app"></div>
   </body>
