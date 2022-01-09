@@ -9,39 +9,67 @@
 )
   .latest-vids-container.pt-12(
     :style=`{
-      padding: '0px 8px',
       maxWidth: '100%',
       width: '600px'
     }`
   )
-    .search-container.pt-12
-      .suggestion-search.pt-12(v-if='suggestion')
-        .text-h4.text-center(rounded)
+    .search-container.pt-12(:style=`{
+        padding: '0px 8px',
+      }`)
+      .suggestion-search.pt-12.flex.flex-col(v-if='suggestion')
+        .text-h4.text-center(style='font-weight: 700')
           | {{ suggestion }}
-      template(v-else)
-        .clear-container(
-          v-if='playlistIds.length',
-          style='display: flex; width: 100%; justify-content: flex-end'
-        )
-          q-btn(color='primary', @click='clearPlaylistIds') Clear
+        .loading-spinner.pt-12.flex.justify-center(v-if='loading')
+          q-spinner(
+            :style=`{
+              marginLeft: '10px'
+            }`,
+            color='tertiary',
+            size='1.5em'
+          )
+      .profile-pictures.pt-12.flex.flex-col.flex-wrap
+        .title Selected Channels
+        .flex.flex-row
+          template(v-for='picture in profilePictures')
+            a(
+              :href='"https://www.youtube.com/channel/" + picture.id',
+              target='_blank'
+            )
+              //- onerror='this.parentNode.removeChild(this)',
+              img(
+                :src='picture.url',
+                :style=`{
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '50%',
+                  marginRight: '16px',
+                  marginTop: '8px'
+                }`
+              )
+      template(v-if='!suggestion')
         template(v-for='(playlistId, idx) in playlistIds')
           .input-container.pt-12
-            q-input(
+            q-input.channelID-input(
               v-model='playlistIds[idx]',
+              label='Channel ID',
               filled,
               outlined,
               dark,
               placeholder='Enter a YouTube Channel ID'
             )
               template(v-slot:append)
-                q-icon.cursor-pointer(
+                q-icon.channelID-icon.cursor-pointer(
                   name='cancel',
                   @click='deletePlaylistId(idx)'
                 )
-        .add-playlistId-button.pt-12
-          q-btn.full-width(color='accent', @click='addPlaylistId')
-            q-icon(name='add')
-        .search-videos-button.pt-24
+        .clear-and-add.pt-12.flex.flex-row
+          .clear-container.w-50.pr-6(v-if='playlistIds.length')
+            q-btn.full-width(color='primary', @click='clearPlaylistIds') Clear All
+          .add-playlistId-button.w-50.pl-6
+            q-btn.full-width(color='accent', @click='addPlaylistId')
+              | Add Channel
+              q-icon(name='add')
+        .search-videos-button.pt-12
           q-btn.full-width(color='secondary', @click='searchVideos')
             | {{ loading ? 'Searching' : 'Search' }}
             q-spinner(
@@ -52,10 +80,8 @@
               color='tertiary',
               size='1.5em'
             )
-
         .suggestions-container.pt-24
-          p Some suggestions
-          .pt-12
+          .pb-12 Some suggestions
           template(v-for='suggestion in suggestions')
             q-btn(
               style='margin-right: 12px',
@@ -68,37 +94,17 @@
           | {{ error }}
           template(v-slot:action)
             q-btn(flat, label='Dismiss', @click='error = undefined')
-    .results-container.pt-24
-      .results.pt-12.pb-12(v-if='results.length') {{ results.length }} Results
-      template(v-for='video in results')
-        .result-container.pb-36
-          a(
-            :href='"https://www.youtube.com/watch?v=" + video.contentDetails.videoId',
-            target='_blank'
-          )
-            img(
-              :src='video.snippet.thumbnails.maxres?.url || video.snippet.thumbnails.high?.url || video.snippet.thumbnails.standard?.url'
-            )
-            .title(
-              :style=`{
-                paddingTop: '4px',
-                fontSize: '20px',
-                fontWeight: 500
-              }`
-            )
-              span {{ video.snippet.title }}
-              span(
-                :style=`{
-                paddingLeft: '8px'
-              }`
-              ) | {{ video.snippet.videoOwnerChannelTitle }}
+    grid(:videos='results')
 </template>
-
 <script>
 import { defineComponent, ref } from 'vue'
+import grid from 'components/grid.vue'
 
 export default defineComponent({
-  name: 'GetLatestVideos',
+  name: 'Search',
+  components: {
+    grid,
+  },
   props: {
     presetMode: {
       type: Boolean,
@@ -113,6 +119,7 @@ export default defineComponent({
     return {
       loading: ref(false),
       error: ref(undefined),
+      profilePictures: [],
     }
   },
   computed: {
@@ -163,6 +170,43 @@ export default defineComponent({
       this.$store.commit('subber/clearPlaylistIds')
       this.searchVideos()
     },
+    async getProfilePictures() {
+      let apiUrl
+      try {
+        apiUrl = `${
+          process.env.VIDEO_API || 'https://subber-api.herokuapp.com'
+        }/v1/profile-pictures`
+      } catch (err) {
+        console.error(err)
+        apiUrl = 'https://subber-api.herokuapp.com/v1/profile-pictures'
+      }
+
+      console.log('Sending request to', apiUrl)
+      const resp = await this.$axios
+        .get(apiUrl, {
+          params: {
+            channelIds: this.playlistIds,
+          },
+        })
+        .catch((err) => {
+          console.error(JSON.stringify(err, null, 2))
+        })
+
+      console.log('getProfilePictures resp', resp)
+      console.log('getProfilePictures resp.data', resp.data)
+      if (resp && resp.data) {
+        // let idx = 0
+        // const interval = setInterval(() => {
+        //   if (idx >= resp.data.profilePictures.length) {
+        //     clearInterval(interval)
+        //   } else {
+        //     this.profilePictures.push(resp.data.profilePictures[idx])
+        //     idx++
+        //   }
+        // }, 3500)
+        this.profilePictures = resp.data.profilePictures
+      }
+    },
     async searchVideos() {
       this.error = false
       let apiUrl
@@ -174,6 +218,8 @@ export default defineComponent({
         console.error(err)
         apiUrl = 'https://subber-api.herokuapp.com/v1/videos'
       }
+
+      this.getProfilePictures()
 
       this.loading = true
 
@@ -222,3 +268,10 @@ export default defineComponent({
   },
 })
 </script>
+<style lang="sass">
+.channelID-input .channelID-icon
+  opacity: 0
+  transition: all 350ms ease
+.channelID-input:hover .channelID-icon
+  opacity: 1
+</style>

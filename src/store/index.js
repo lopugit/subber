@@ -13,9 +13,17 @@ import subber from './subber'
  */
 
 const currentStoreVersion = window.localStorage.getItem('storeVersion')
-const storeVersion = 4
+const storeVersion = 8
 if (!currentStoreVersion || currentStoreVersion < storeVersion) {
-  window.localStorage.setItem('vuex', JSON.stringify({ subber: {} }))
+  const store = JSON.parse(window.localStorage.getItem('vuex'))
+  window.localStorage.setItem(
+    'vuex',
+    JSON.stringify({
+      subber: {
+        playlistIds: store.subber.playlistIds,
+      },
+    })
+  )
   window.localStorage.setItem('storeVersion', storeVersion)
 }
 

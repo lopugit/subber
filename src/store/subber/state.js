@@ -2,6 +2,7 @@ export default function () {
   const state = {
     playlistIds: [''],
     results: [],
+    embedded: true,
     suggestions: [
       [
         'Simon Whistler Empire',
