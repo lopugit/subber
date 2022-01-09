@@ -61,7 +61,7 @@
                   @click='deletePlaylistId(idx)'
                 )
         .clear-and-add.pt-12.flex.flex-row
-          .clear-container.w-50.pr-6(v-if='playlistIds.length')
+          .clear-container.w-50.pr-6
             q-btn.full-width(color='primary', @click='clearPlaylistIds') Clear All
           .add-playlistId-button.w-50.pl-6
             q-btn.full-width(color='accent', @click='addPlaylistId')
