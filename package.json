@@ -1,7 +1,7 @@
 {
   "name": "subber",
   "version": "0.0.1",
-  "description": "Subber YouTube Organizer",
+  "description": "Custom YouTube Subscription Manager",
   "productName": "Subber",
   "author": "Nikolaj Frey nikolaj@alopu.com",
   "private": true,
