@@ -17,14 +17,6 @@
       .aggregate-search.pt-12.flex.flex-col(v-if='aggregate')
         .text-h4.text-center(style='font-weight: 700')
           | {{ aggregate }}
-        .loading-spinner.pt-12.flex.justify-center(v-if='loading')
-          q-spinner(
-            :style=`{
-              marginLeft: '10px'
-            }`,
-            color='tertiary',
-            size='1.5em'
-          )
       template(v-if='!aggregate')
         .input-container.pt-12
           q-input.channel-search(
@@ -122,7 +114,7 @@
           | {{ error }}
           template(v-slot:action)
             q-btn(flat, label='Dismiss', @click='error = undefined')
-    grid(:videos='results')
+    grid(:videos='results', :loading='loading')
 </template>
 <script>
 import { defineComponent, ref } from 'vue'

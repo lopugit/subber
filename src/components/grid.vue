@@ -1,7 +1,10 @@
 <template lang="pug">
 .videos-container.pt-12.pb-24
   .flex.flex-row.align-center.pt-12.pb-12.mobile-spacing
-    .videos(v-if='videos.length') {{ videos.length }} Results
+    .videos.flex-center(v-if='!loading && videos.length') {{ videos.length }} Results
+    .videos(v-if='loading')
+      | Loading results
+      q-spinner.ml-12(color='tertiary', size='1.2em')
     .toggle-embedded.ml-auto
       q-toggle(
         label='Embedded',
@@ -27,6 +30,10 @@ export default defineComponent({
     videos: {
       type: Array,
       required: true,
+    },
+    loading: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
