@@ -119,6 +119,7 @@
 <script>
 import { defineComponent, ref } from 'vue'
 import grid from 'components/grid.vue'
+import { debounce } from 'lodash'
 
 export default defineComponent({
   name: 'Search',
@@ -261,7 +262,7 @@ export default defineComponent({
       this.$store.commit('subber/clearChannels')
       this.searchVideos()
     },
-    async searchVideos() {
+    searchVideos: debounce(async function () {
       this.error = false
       let apiUrl
       try {
@@ -304,7 +305,7 @@ export default defineComponent({
       if (resp?.data?.error) {
         this.error = resp.data.error
       }
-    },
+    }, 850),
     addChannels(channels) {
       this.$store.commit('subber/addChannels', channels)
       this.searchVideos()
@@ -325,6 +326,7 @@ export default defineComponent({
 <style lang="sass">
 .channel-remove-icon
   opacity: 0
+  transition: opacity 350ms ease
 .channel-icon:hover
   .channel-remove-icon
     opacity: 1
