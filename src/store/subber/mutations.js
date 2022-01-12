@@ -1,23 +1,41 @@
+const _ = require('lodash')
+
 export function thing(state, args) {
-  state[args.key] = args.val
+  _.set(state, args.key, args.val)
 }
 
-export function deletePlaylistId(state, idx) {
-  state.playlistIds.splice(idx, 1)
+export function deleteChannel(state, idx) {
+  state.channels.splice(idx, 1)
 }
 
-export function addPlaylistId(state, idx) {
-  state.playlistIds.push('')
+export function addChannel(state, channel) {
+  if (
+    !state.user.home.channels.find(
+      (search) => search.id.channelId === channel.id.channelId
+    )
+  ) {
+    state.user.home.channels.push(channel)
+  }
 }
 
-export function addPlaylistIds(state, idxs) {
-  idxs.forEach((idx) => {
-    if (!state.playlistIds.includes(idx)) {
-      state.playlistIds.push(idx)
+export function addChannels(state, channels) {
+  channels.forEach((channel) => {
+    if (
+      !state.user.home.channels.find(
+        (search) => search.id.channelId === channel.id.channelId
+      )
+    ) {
+      state.user.home.channels.push(channel)
     }
   })
 }
 
-export function clearPlaylistIds(state) {
-  state.playlistIds = []
+export function removeChannel(state, channel) {
+  state.user.home.channels = state.user.home.channels.filter((found) => {
+    return found.id.channelId !== channel.id.channelId
+  })
+}
+
+export function clearChannels(state) {
+  state.channels = []
 }

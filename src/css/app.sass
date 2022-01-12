@@ -1,189 +1,96 @@
 // app global css in Sass form
+@import './quasar.variables.sass'
 
-.pt-1
-  padding-top: 1px
-.pt-2
-  padding-top: 2px
-.pt-3
-  padding-top: 3px
-.pt-4
-  padding-top: 4px
-.pt-5
-  padding-top: 5px
-.pt-6
-  padding-top: 6px
-.pt-7
-  padding-top: 7px
-.pt-8
-  padding-top: 8px
-.pt-9
-  padding-top: 9px
-.pt-10
-  padding-top: 10px
-.pt-11
-  padding-top: 11px
-.pt-12
-  padding-top: 12px
-.pt-14
-  padding-top: 14px
-.pt-16
-  padding-top: 16px
-.pt-18
-  padding-top: 18px
-.pt-20
-  padding-top: 20px
-.pt-22
-  padding-top: 22px
-.pt-24
-  padding-top: 24px
-.pt-26
-  padding-top: 26px
-.pt-28
-  padding-top: 28px
-.pt-30
-  padding-top: 30px
-.pt-32
-  padding-top: 32px
-.pt-34
-  padding-top: 34px
-.pt-36
-  padding-top: 36px
+a
+  color: white
+  text-decoration: none
+a.dark
+  color: white
+  text-decoration: none
 
-.pb-12
-  padding-bottom: 12px
-.pb-14
-  padding-bottom: 14px
-.pb-16
-  padding-bottom: 16px
-.pb-18
-  padding-bottom: 18px
-.pb-20
-  padding-bottom: 20px
-.pb-22
-  padding-bottom: 22px
-.pb-24
-  padding-bottom: 24px
-.pb-26
-  padding-bottom: 26px
-.pb-28
-  padding-bottom: 28px
-.pb-30
-  padding-bottom: 30px
-.pb-32
-  padding-bottom: 32px
-.pb-34
-  padding-bottom: 34px
-.pb-36
-  padding-bottom: 36px
+@for $i from 0 through 400
+  .pa-#{$i}
+    padding: #{$i}px
+  .pt-#{$i}
+    padding-top: #{$i}px
+  .pb-#{$i}
+    padding-bottom: #{$i}px
+  .pl-#{$i}
+    padding-left: #{$i}px
+  .pr-#{$i}
+    padding-right: #{$i}px
+  .ma-#{$i}
+    margin: #{$i}px
+  .mt-#{$i}
+    margin-top: #{$i}px
+  .mb-#{$i}
+    margin-bottom: #{$i}px
+  .ml-#{$i}
+    margin-left: #{$i}px
+  .mr-#{$i}
+    margin-right: #{$i}px
 
-.pr-1
-  padding-right: 1px
-.pr-2
-  padding-right: 2px
-.pr-3
-  padding-right: 3px
-.pr-4
-  padding-right: 4px
-.pr-5
-  padding-right: 5px
-.pr-6
-  padding-right: 6px
-.pr-7
-  padding-right: 7px
-.pr-8
-  padding-right: 8px
-.pr-9
-  padding-right: 9px
-.pr-10
-  padding-right: 10px
-.pr-11
-  padding-right: 11px
-.pr-12
-  padding-right: 12px
-.pr-14
-  padding-right: 14px
-.pr-16
-  padding-right: 16px
-.pr-18
-  padding-right: 18px
-.pr-20
-  padding-right: 20px
-.pr-22
-  padding-right: 22px
-.pr-24
-  padding-right: 24px
-.pr-26
-  padding-right: 26px
-.pr-28
-  padding-right: 28px
-.pr-30
-  padding-right: 30px
-.pr-32
-  padding-right: 32px
-.pr-34
-  padding-right: 34px
-.pr-36
-  padding-right: 36px
+  .pa-#{$i}
+    padding: #{$i}px !important
+  .pt-#{$i}
+    padding-top: #{$i}px !important
+  .pb-#{$i}
+    padding-bottom: #{$i}px !important
+  .pl-#{$i}
+    padding-left: #{$i}px !important
+  .pr-#{$i}
+    padding-right: #{$i}px !important
+  .ma-#{$i}
+    margin: #{$i}px !important
+  .mt-#{$i}
+    margin-top: #{$i}px !important
+  .mb-#{$i}
+    margin-bottom: #{$i}px !important
+  .ml-#{$i}
+    margin-left: #{$i}px !important
+  .mr-#{$i}
+    margin-right: #{$i}px !important
+  .w-#{$i}
+    width: #{$i}px
+  .h-#{$i}
+    height: #{$i}px
 
-.pl-1
-  padding-left: 1px
-.pl-2
-  padding-left: 2px
-.pl-3
-  padding-left: 3px
-.pl-4
-  padding-left: 4px
-.pl-5
-  padding-left: 5px
-.pl-6
-  padding-left: 6px
-.pl-7
-  padding-left: 7px
-.pl-8
-  padding-left: 8px
-.pl-9
-  padding-left: 9px
-.pl-10
-  padding-left: 10px
-.pl-11
-  padding-left: 11px
-.pl-12
-  padding-left: 12px
-.pl-14
-  padding-left: 14px
-.pl-16
-  padding-left: 16px
-.pl-18
-  padding-left: 18px
-.pl-20
-  padding-left: 20px
-.pl-22
-  padding-left: 22px
-.pl-24
-  padding-left: 24px
-.pl-26
-  padding-left: 26px
-.pl-28
-  padding-left: 28px
-.pl-30
-  padding-left: 30px
-.pl-32
-  padding-left: 32px
-.pl-34
-  padding-left: 34px
-.pl-36
-  padding-left: 36px
+@for $i from -100 through 100
+  layer-#{$i}
+    z-index: #{$i}
+    position: absolute
+    width: 100%
+    height: 100%
 
-
-.mobile-spacing
-  @media (max-width: 600px)
-    padding-left: 8px
-    padding-right: 8px
-
+.flex-center
+  display: flex
+  justify-content: center
+  align-items: center
+.flex-justify-center
+  display: flex
+  justify-content: center
+.flex-align-center
+  display: flex
+  align-items: center
+.flex-justify-end
+  display: flex
+  justify-content: flex-end
+.flex-align-end
+  display: flex
+  align-items: flex-end
+.flex-justify-start
+  display: flex
+  justify-content: flex-start
+.flex-align-start
+  display: flex
+  align-items: flex-start
 .flex-row
+  display: flex
   flex-direction: row
 .flex-col
+  display: flex
   flex-direction: column
+
 .relative
   position: relative
 .absolute
@@ -192,43 +99,56 @@
   display: block
 .inline-block
   display: inline-block
-.m-w-100
-  max-width: 100%
-.w-100
-  width: 100%
-.w-50
-  width: 50%
-.w-49
-  width: 49%
-.w-auto
-  width: auto
-.m-h-100
-  max-height: 100%
-.h-100
-  height: 100%
-.h-50
-  height: 50%
-.h-49
-  height: 49%
-.h-auto
-  height: auto
-.align-center
-  align-items: center
-.justify-center
-  justify-content: center
-.justify-self-start
-  justify-self: flex-start
-.justify-self-end
-  justify-self: flex-end
+
+.ma-auto
+  margin: auto
 .ml-auto
   margin-left: auto
 .mr-auto
   margin-right: auto
+.mt-auto
+  margin-top: auto
+.mb-auto
+  margin-bottom: auto
 
+.ma-auto
+  margin: auto !important
+.ml-auto
+  margin-left: auto !important
+.mr-auto
+  margin-right: auto !important
+.mt-auto
+  margin-top: auto !important
+.mb-auto
+  margin-bottom: auto !important
 
-a
-  color: white
-  text-decoration: none
+.h-100
+  height: 100%
+.w-100
+  width: 100%
+.hw-100
+  height: 100%
+  width: 100%
+.mh-100
+  max-height: 100%
+.mw-100
+  max-width: 100%
+
+.vis-anim
+  transition: opacity 350ms ease-out
+.not-hidden
+  opacity: 1
+.hidden
+  opacity: 0 !important
+
+// mods
+.q-field--filled .q-field__control:before
+  background-color: transparent !important
+
+.mobile-spacing
+  @media (max-width: 600px)
+    padding-left: 8px
+    padding-right: 8px
 
 body
   background: #0F0F0F

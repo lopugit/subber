@@ -14,9 +14,9 @@
     }`
   )
     .search-container.pt-12.mobile-spacing
-      .suggestion-search.pt-12.flex.flex-col(v-if='suggestion')
+      .aggregate-search.pt-12.flex.flex-col(v-if='aggregate')
         .text-h4.text-center(style='font-weight: 700')
-          | {{ suggestion }}
+          | {{ aggregate }}
         .loading-spinner.pt-12.flex.justify-center(v-if='loading')
           q-spinner(
             :style=`{
@@ -25,68 +25,98 @@
             color='tertiary',
             size='1.5em'
           )
-      .profile-pictures.pt-12.flex.flex-col.flex-wrap
+      template(v-if='!aggregate')
+        .input-container.pt-12
+          q-input.channel-search(
+            v-model='query',
+            placeholder='Start typing to search for channels',
+            filled,
+            outlined,
+            dark,
+            debounce='500'
+          )
+            template(v-slot:append)
+              q-spinner(
+                :style=`{
+                marginLeft: '10px'
+              }`,
+                v-if='channelSearchLoading',
+                color='tertiary',
+                size='1.5em'
+              )
+          .search-results(v-if='searchResults.length')
+            q-list.bg-secondary(bordered, separator)
+              template(v-for='(searchResult, idx) in searchResults')
+                q-item.pt-16.pb-16(
+                  @click='selectSearchResult(searchResult)',
+                  clickable,
+                  v-ripple,
+                  v-if='idx <= searchResultLimit'
+                )
+                  q-item-section(avatar)
+                    img(
+                      :src='searchResult.snippet.thumbnails.default.url',
+                      :style=`{
+                        width: '40px',
+                        height: '40px',
+                        borderRadius: '50%',
+                        marginRight: '16px',
+                      }`
+                    )
+                  q-item-section
+                    q-item-label {{ searchResult.snippet.channelTitle }}
+                    q-item-label {{ searchResult.snippet.description }}
+                  q-item-section(avatar)
+                    q-btn(flat)
+                      q-icon(name='add')
+              q-item(clickable, @click='showMoreSearchResults')
+                q-item-section
+                  q-item-label Show more
+                q-item-section(
+                  side,
+                  v-if='searchResults.length - searchResultLimit > 0'
+                )
+                  q-item-label {{ searchResults.length - searchResultLimit }} More
+            .clear-btn.flex.w-100.pt-12(v-if='searchResults.length')
+              q-btn.ml-auto(@click='clearSearch', color='secondary') Clear
+      .profile-pictures.pt-24.flex.flex-col.flex-wrap(v-if='channels.length')
         .title Selected Channels
         .flex.flex-row
-          template(v-for='picture in profilePictures')
-            a(
-              :href='"https://www.youtube.com/channel/" + picture.id',
-              target='_blank'
-            )
-              //- onerror='this.parentNode.removeChild(this)',
-              img(
-                :src='picture.url',
-                :style=`{
-                  width: '40px',
-                  height: '40px',
-                  borderRadius: '50%',
-                  marginRight: '16px',
-                  marginTop: '8px'
-                }`
-              )
-      template(v-if='!suggestion')
-        template(v-for='(playlistId, idx) in playlistIds')
-          .input-container.pt-12
-            q-input.channelID-input(
-              v-model='playlistIds[idx]',
-              label='Channel ID',
-              filled,
-              outlined,
-              dark,
-              placeholder='Enter a YouTube Channel ID'
-            )
-              template(v-slot:append)
-                q-icon.channelID-icon.cursor-pointer(
-                  name='cancel',
-                  @click='deletePlaylistId(idx)'
+          template(v-for='channel in channels')
+            .channel-icon.relative.mr-16.mt-8
+              .channel-icon-inner
+                a(
+                  v-if='channel',
+                  :href='"https://www.youtube.com/channel/" + channel.id.channelId',
+                  target='_blank'
                 )
-        .clear-and-add.pt-12.flex.flex-row
-          .clear-container.w-50.pr-6
-            q-btn.full-width(color='primary', @click='clearPlaylistIds') Clear All
-          .add-playlistId-button.w-50.pl-6
-            q-btn.full-width(color='accent', @click='addPlaylistId')
-              | Add Channel
-              q-icon(name='add')
-        .search-videos-button.pt-12
-          q-btn.full-width(color='secondary', @click='searchVideos')
-            | {{ loading ? 'Searching' : 'Search' }}
-            q-spinner(
-              :style=`{
-              marginLeft: '10px'
-            }`,
-              v-if='loading',
-              color='tertiary',
-              size='1.5em'
-            )
-        .suggestions-container.pt-24
-          .pb-12 Some suggestions
-          template(v-for='suggestion in suggestions')
+                  img(
+                    :src='channel.snippet.thumbnails.default.url',
+                    :style=`{
+                      width: '40px',
+                      height: '40px',
+                      borderRadius: '50%'
+                    }`
+                  )
+                q-btn.absolute.channel-remove-icon(
+                  color='accent',
+                  round,
+                  dense,
+                  size='xs',
+                  @click='removeChannel(channel)',
+                  v-if='!aggregate'
+                )
+                  q-icon(name='close')
+      template(v-if='!aggregate')
+        .aggregates-container.pt-24
+          .pb-12 Some suggested networks
+          template(v-for='aggregate in aggregates')
             q-btn(
               style='margin-right: 12px',
               color='accent',
-              @click='addPlaylistIds(suggestion[1])'
+              @click='addChannels(aggregate[1])'
             )
-              | {{ suggestion[0] }}
+              | {{ aggregate[0] }}
       .error-container.pt-24(v-if='error')
         q-banner.bg-negative(color='error', rounded, inline-actions)
           | {{ error }}
@@ -108,7 +138,7 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
-    suggestion: {
+    aggregate: {
       type: String,
       default: undefined,
     },
@@ -116,94 +146,128 @@ export default defineComponent({
   data() {
     return {
       loading: ref(false),
+      channelSearchLoading: ref(false),
       error: ref(undefined),
-      profilePictures: [],
+      query: ref(''),
+      searchResults: ref([]),
+      results: ref([]),
+      searchResultLimit: ref(4),
     }
   },
   computed: {
-    suggestions: {
+    aggregates: {
       get() {
-        return this.$store.state.subber.suggestions
+        return this.$store.state.subber.aggregates
       },
       set(val) {
         this.$store.commit('subber/thing', {
-          key: 'suggestions',
+          key: 'aggregates',
           val,
         })
       },
     },
-    results: {
+    channels: {
       get() {
-        return this.$store.state.subber.results
+        return this.$store.state.subber.user.home.channels
       },
       set(val) {
         this.$store.commit('subber/thing', {
-          key: 'results',
-          val,
-        })
-      },
-    },
-    playlistIds: {
-      get() {
-        return this.$store.state.subber.playlistIds
-      },
-      set(val) {
-        this.$store.commit('subber/thing', {
-          key: 'playlistIds',
+          key: 'user.home.channels',
           val,
         })
       },
     },
   },
+  watch: {
+    query() {
+      if (this.query) {
+        this.searchForChannels()
+      } else {
+        this.clearSearch()
+      }
+    },
+  },
   mounted() {
+    console.log('this.presetMode', this.presetMode)
     if (this.presetMode) {
-      this.playlistIds = (this.suggestions.find(
-        (s) => s[0] === this.suggestion
-      ) || ['', []])[1]
+      console.log('this.aggregates', this.aggregates)
+      console.log('this.aggregate', this.aggregate)
+      const aggregateChannels = this.aggregates.find(
+        (s) => s[0] === this.aggregate
+      )[1]
+
+      console.log('aggregateChannels', aggregateChannels)
+      if (aggregateChannels) {
+        console.log(
+          'aggregateChannels.map((s) => s)',
+          aggregateChannels.map((s) => s)
+        )
+        this.channels = aggregateChannels.map((s) => s)
+      }
+      console.log('this.channels', this.channels)
     }
     this.searchVideos()
   },
   methods: {
-    clearPlaylistIds() {
-      this.$store.commit('subber/clearPlaylistIds')
+    showMoreSearchResults() {
+      this.searchResultLimit += 4
+    },
+    clearSearch() {
+      this.query = ''
+      this.searchResults = []
+    },
+    removeChannel(channel) {
+      this.$store.commit('subber/removeChannel', channel)
       this.searchVideos()
     },
-    async getProfilePictures() {
-      let apiUrl
-      try {
-        apiUrl = `${
-          process.env.VIDEO_API || 'https://subber-api.herokuapp.com'
-        }/v1/profile-pictures`
-      } catch (err) {
-        console.error(err)
-        apiUrl = 'https://subber-api.herokuapp.com/v1/profile-pictures'
-      }
+    async searchForChannels() {
+      if (this.query) {
+        this.channelSearchLoading = true
 
-      console.log('Sending request to', apiUrl)
-      const resp = await this.$axios
-        .get(apiUrl, {
-          params: {
-            channelIds: this.playlistIds,
-          },
-        })
-        .catch((err) => {
-          console.error(JSON.stringify(err, null, 2))
-        })
+        let apiUrl
+        try {
+          apiUrl = `${
+            process.env.VIDEO_API || 'https://subber-api.herokuapp.com'
+          }/v1/channel-search`
+        } catch (err) {
+          console.error(err)
+          apiUrl = 'https://subber-api.herokuapp.com/v1/channel-search'
+        }
 
-      console.log('getProfilePictures resp', resp)
-      console.log('getProfilePictures resp.data', resp.data)
-      if (resp && resp.data) {
-        // let idx = 0
-        // const interval = setInterval(() => {
-        //   if (idx >= resp.data.profilePictures.length) {
-        //     clearInterval(interval)
-        //   } else {
-        //     this.profilePictures.push(resp.data.profilePictures[idx])
-        //     idx++
-        //   }
-        // }, 3500)
-        this.profilePictures = resp.data.profilePictures
+        console.log('Sending request to', apiUrl)
+        const resp = await this.$axios
+          .get(apiUrl, {
+            params: {
+              query: this.query,
+            },
+          })
+          .catch((err) => {
+            console.error(JSON.stringify(err, null, 2))
+          })
+
+        this.channelSearchLoading = false
+        if (resp && resp.data) {
+          this.searchResults = resp.data.results
+          console.log('Got resp searchForChannels', resp)
+        }
       }
+    },
+    selectSearchResult(searchResult) {
+      console.log('test')
+      console.log('searchResult', searchResult)
+      console.log('this.channels', this.channels)
+      console.log('this.channels[0]', this.channels[0])
+      console.log('this.channels[1]', this.channels[1])
+      this.addChannel(searchResult)
+      this.query = ''
+      this.searchResults = this.searchResults.filter((result) => {
+        return result.id.channelId !== searchResult.id.channelId
+      })
+      this.searchVideos()
+    },
+    clearChannels() {
+      this.$store.commit('subber/clearChannels')
+      this.searchVideos()
     },
     async searchVideos() {
       this.error = false
@@ -217,15 +281,15 @@ export default defineComponent({
         apiUrl = 'https://subber-api.herokuapp.com/v1/videos'
       }
 
-      this.getProfilePictures()
-
       this.loading = true
 
       console.log('Sending request to', apiUrl)
       const resp = await this.$axios
         .get(apiUrl, {
           params: {
-            playlistIds: this.playlistIds,
+            playlistIds: this.channels.map((channel) => {
+              return channel.id.channelId
+            }),
           },
         })
         .catch((err) => {
@@ -249,27 +313,30 @@ export default defineComponent({
         this.error = resp.data.error
       }
     },
-    addPlaylistIds(playlistIds) {
-      this.$store.commit('subber/addPlaylistIds', playlistIds)
+    addChannels(channels) {
+      this.$store.commit('subber/addChannels', channels)
       this.searchVideos()
     },
-    addPlaylistId() {
-      this.$store.commit('subber/addPlaylistId')
+    addChannel(channel) {
+      this.$store.commit('subber/addChannel', channel)
     },
-    deletePlaylistId(idx) {
+    deleteChannel(idx) {
       clearTimeout(this.timeout)
       this.timeout = setTimeout(() => {
         this.searchVideos()
       }, 300)
-      this.$store.commit('subber/deletePlaylistId', idx)
+      this.$store.commit('subber/deleteChannel', idx)
     },
   },
 })
 </script>
 <style lang="sass">
-.channelID-input .channelID-icon
+.channel-remove-icon
   opacity: 0
-  transition: all 350ms ease
-.channelID-input:hover .channelID-icon
-  opacity: 1
+.channel-icon:hover
+  .channel-remove-icon
+    opacity: 1
+.channel-remove-icon
+  top: -5px
+  left: -7px
 </style>

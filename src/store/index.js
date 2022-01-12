@@ -13,17 +13,22 @@ import subber from './subber'
  */
 
 const currentStoreVersion = window.localStorage.getItem('storeVersion')
-const storeVersion = 8
+const storeVersion = 18
+const fullReset = true
 if (!currentStoreVersion || currentStoreVersion < storeVersion) {
-  const store = JSON.parse(window.localStorage.getItem('vuex')) || {}
-  window.localStorage.setItem(
-    'vuex',
-    JSON.stringify({
-      subber: {
-        playlistIds: store && store.subber && store.subber.playlistIds,
-      },
-    })
-  )
+  if (fullReset) {
+    window.localStorage.setItem('vuex', undefined)
+  } else {
+    const store = JSON.parse(window.localStorage.getItem('vuex')) || {}
+    window.localStorage.setItem(
+      'vuex',
+      JSON.stringify({
+        subber: {
+          user: store && store.subber && store.subber.user,
+        },
+      })
+    )
+  }
   window.localStorage.setItem('storeVersion', storeVersion)
 }
 
@@ -40,5 +45,6 @@ export default store(function (/* { ssrContext } */) {
     ],
   })
   window.store = Store
+  window.$store = Store
   return Store
 })

@@ -34,10 +34,10 @@ q-layout(view='lHh Lpr lFf')
       q-item(clickable, href='/')
         q-item-section
           q-item-label Home
-      template(v-for='(suggestion, idx) in suggestions')
-        q-item(clickable, :href='suggestion[0].replace(/ /gi, "-")')
+      template(v-for='(aggregate, idx) in aggregates')
+        q-item(clickable, :href='aggregate[0].replace(/ /gi, "-")')
           q-item-section
-            q-item-label {{ suggestion[0] }}
+            q-item-label {{ aggregate[0] }}
       q-item.p-12
         q-item-section.text-bold
           | Privacy
@@ -81,13 +81,13 @@ export default defineComponent({
     return {}
   },
   computed: {
-    suggestions: {
+    aggregates: {
       get() {
-        return this.$store.state.subber.suggestions
+        return this.$store.state.subber.aggregates
       },
       set(val) {
         this.$store.commit('subber/thing', {
-          key: 'suggestions',
+          key: 'aggregates',
           val,
         })
       },

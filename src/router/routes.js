@@ -12,7 +12,7 @@ const routes = [
         path: '',
         props: {
           presetMode: true,
-          suggestion: 'Simon Whistler Empire',
+          aggregate: 'Simon Whistler Empire',
         },
         component: () => import('src/components/search.vue'),
       },
@@ -26,7 +26,7 @@ const routes = [
         path: '',
         props: {
           presetMode: true,
-          suggestion: 'xQc Clips Empire',
+          aggregate: 'xQc Clips Empire',
         },
         component: () => import('src/components/search.vue'),
       },
