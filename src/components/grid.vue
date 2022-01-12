@@ -2,7 +2,7 @@
 .videos-container.pt-12.pb-24
   .flex.flex-row.align-center.pt-12.pb-12.mobile-spacing
     .videos.flex-center(v-if='!loading && videos.length') {{ videos.length }} Results
-    .videos(v-if='loading')
+    .videos.flex-center(v-if='loading')
       | Loading results
       q-spinner.ml-12(color='tertiary', size='1.2em')
     .toggle-embedded.ml-auto
