@@ -14,10 +14,10 @@
     }`
   )
     .search-container.pt-12.mobile-spacing
-      .aggregate-search.pt-12.flex.flex-col(v-if='aggregate')
-        .text-h4.text-center(style='font-weight: 700')
-          | {{ aggregate }}
-      template(v-if='!aggregate')
+      .collection-search.pt-12.flex.flex-col(v-if='currentCollectionName')
+        .text-h4.text-center.capitalize(style='font-weight: 700')
+          | {{ currentCollectionName.replace(/-/gi, ' ') }}
+      template(v-if='!currentCollectionName')
         .input-container.pt-12
           q-input.channel-search(
             v-model='query',
@@ -77,11 +77,7 @@
           template(v-for='channel in channels')
             .channel-icon.relative.mr-16.mt-8
               .channel-icon-inner
-                a(
-                  v-if='channel',
-                  :href='"https://www.youtube.com/channel/" + channel.id.channelId',
-                  target='_blank'
-                )
+                .channel-icon-img
                   img(
                     :src='channel.snippet.thumbnails.default.url',
                     :style=`{
@@ -96,19 +92,110 @@
                   dense,
                   size='xs',
                   @click='removeChannel(channel)',
-                  v-if='!aggregate'
+                  v-if='!currentCollectionName'
                 )
                   q-icon(name='close')
-      template(v-if='!aggregate')
-        .aggregates-container.pt-24
-          .pb-12 Some suggested networks
-          template(v-for='aggregate in aggregates')
-            q-btn(
-              style='margin-right: 12px',
+      template(v-if='!currentCollectionName')
+        .save-as-container.pt-18(v-if='channels.length')
+          .flex-align-center.flex-row
+            q-btn.pl-12.pr-12(
               color='accent',
-              @click='addChannels(aggregate[1])'
+              dense,
+              @click='saveIntent = !saveIntent'
+            ) Save Collection
+          q-dialog(
+            v-model='saveIntent',
+            @hide='saveSuccess = false; incorrectPassword = false'
+          )
+            q-card(dark)
+              q-card-section.mw-100
+                .message-section.flex-col(v-if='saveSuccess') Congratulations! Your collection has been saved.
+                  .message You can access it here:
+                  a.underline.pt-4(
+                    :href='`${origin}/collections/${collectionNameUrl}`'
+                  ) {{ origin }}/collections/{{ collectionNameUrl }}
+
+                .form-section.flex-center.flex-col(v-if='!saveSuccess')
+                  q-input.w-420.mw-100.pb-24(
+                    v-model='collectionName',
+                    label='Collection Name',
+                    placeholder='Enter a collection name to save as',
+                    dense,
+                    dark,
+                    v-show='saveIntent',
+                    @blur='v$.collectionName.$touch',
+                    :rules=`[
+                      val => !v$.collectionName.$error || v$.collectionName.$errors[0].$message.replace('Value', 'Collection Name'),
+                      val => !incorrectPassword || 'This collection name already exists and the wrong password was used to modify it'
+                    ]`,
+                    reactive-rules
+                  )
+                  q-input.w-full.pb-24(
+                    v-model='collectionAuthor',
+                    label='Author',
+                    placeholder='Enter an Author name',
+                    dense,
+                    dark,
+                    @blur='v$.collectionAuthor.$touch',
+                    :rules=`[
+                      val => !this.v$.collectionAuthor.$error || this.v$.collectionAuthor.$errors[0].$message.replace('Value', 'Author')
+                    ]`,
+                    reactive-rules
+                  )
+                  q-input.w-full.pb-24(
+                    v-model='collectionEmail',
+                    label='Email',
+                    placeholder='Enter an email incase you forget the password',
+                    dense,
+                    dark,
+                    @blur='v$.collectionEmail.$touch',
+                    :rules=`[
+                      val => !this.v$.collectionEmail.$error || this.v$.collectionEmail.$errors[0].$message.replace('Value', 'Email')
+                    ]`,
+                    reactive-rules
+                  )
+                  q-input.w-full.pb-24(
+                    v-model='collectionPassword',
+                    label='Password',
+                    placeholder='Enter a password so you can edit it later',
+                    dense,
+                    :type='isPwd ? "password" : "text"',
+                    dark,
+                    @blur='v$.collectionPassword.$touch',
+                    :rules=`[
+                      val => !v$.collectionPassword.$error || v$.collectionPassword.$errors[0].$message.replace('Value', 'Password')
+                    ]`,
+                    reactive-rules
+                  )
+                    template(v-slot:append)
+                      q-icon.cursor-pointer(
+                        :name='isPwd ? "visibility_off" : "visibility"',
+                        @click='isPwd = !isPwd'
+                      )
+                  q-btn.w-full(@click='saveAs', color='primary') {{ saveLoading ? 'Saving' : 'Save' }}
+                    q-spinner(
+                      :style=`{
+                      marginLeft: '10px'
+                    }`,
+                      v-if='saveLoading',
+                      color='tertiary',
+                      size='1.2em'
+                    )
+        .collections-container.pt-24(
+          v-if='collections.length && collections.length !== 1'
+        )
+          .pb-12 Some suggested networks
+          template(v-for='collection in collections')
+            q-btn.pl-10.pr-10(
+              v-if='collection.name',
+              style='margin-right: 12px',
+              outline,
+              dense,
+              rounded,
+              color='accent',
+              @click='addChannels(collection.channels || [])'
             )
-              | {{ aggregate[0] }}
+              | {{ collection.name }}
       .error-container.pt-24(v-if='error')
         q-banner.bg-negative(color='error', rounded, inline-actions)
           | {{ error }}
@@ -117,9 +204,11 @@
     grid(:videos='results', :loading='loading')
 </template>
 <script>
-import { defineComponent, ref } from 'vue'
+import { defineComponent } from 'vue'
 import grid from 'components/grid.vue'
-import { debounce } from 'lodash'
+import { debounce, get } from 'lodash'
+import useVuelidate from '@vuelidate/core'
+import { required, email, minLength } from '@vuelidate/validators'
 
 export default defineComponent({
   name: 'Search',
@@ -127,45 +216,74 @@ export default defineComponent({
     grid,
   },
   props: {
-    presetMode: {
-      type: Boolean,
-      default: false,
-    },
-    aggregate: {
+    currentCollectionName: {
       type: String,
-      default: undefined,
+      default: '',
     },
+  },
+  setup() {
+    return { v$: useVuelidate() }
+  },
+  validations() {
+    return {
+      collectionName: { required },
+      collectionAuthor: { required },
+      collectionEmail: { required, email },
+      collectionPassword: { required, minLength: minLength(8) },
+    }
   },
   data() {
     return {
-      loading: ref(false),
-      channelSearchLoading: ref(false),
-      error: ref(undefined),
-      query: ref(''),
-      searchResults: ref([]),
-      results: ref([]),
-      searchResultLimit: ref(4),
+      loading: false,
+      channelSearchLoading: false,
+      error: undefined,
+      query: '',
+      searchResults: [],
+      results: [],
+      searchResultLimit: 4,
+      searchInterval: null,
+      collectionName: 'Test',
+      collectionAuthor: 'lopu',
+      collectionEmail: 'test@test.com',
+      collectionPassword: '12345678',
+      saveIntent: false,
+      saveLoading: false,
+      isPwd: true,
+      saveSuccess: false,
+      incorrectPassword: false,
     }
   },
   computed: {
-    aggregates: {
+    collectionNameUrl() {
+      return this.collectionName.replace(/ /gi, '-').toLowerCase()
+    },
+    origin() {
+      return location.origin
+    },
+    collections: {
       get() {
-        return this.$store.state.subber.aggregates
+        return get(this, '$store.state.subber.collections', [])
       },
       set(val) {
         this.$store.commit('subber/thing', {
-          key: 'aggregates',
+          key: 'collections',
           val,
         })
       },
     },
+    collection() {
+      return this.collections.find(
+        (collection) =>
+          collection.name === this.currentCollectionName.replace(/-/gi, ' ')
+      )
+    },
     channels: {
       get() {
-        return this.$store.state.subber.user.home.channels
+        return get(this, 'collection.channels', [])
       },
       set(val) {
         this.$store.commit('subber/thing', {
-          key: 'user.home.channels',
+          key: 'collections.' + this.currentCollectionName,
           val,
         })
       },
@@ -180,28 +298,48 @@ export default defineComponent({
       }
     },
   },
-  mounted() {
-    console.log('this.presetMode', this.presetMode)
-    if (this.presetMode) {
-      console.log('this.aggregates', this.aggregates)
-      console.log('this.aggregate', this.aggregate)
-      const aggregateChannels = this.aggregates.find(
-        (s) => s[0] === this.aggregate
-      )[1]
-
-      console.log('aggregateChannels', aggregateChannels)
-      if (aggregateChannels) {
-        console.log(
-          'aggregateChannels.map((s) => s)',
-          aggregateChannels.map((s) => s)
-        )
-        this.channels = aggregateChannels.map((s) => s)
-      }
-      console.log('this.channels', this.channels)
-    }
+  async mounted() {
+    await this.$store.dispatch(
+      'subber/populateCollection',
+      this.currentCollectionName
+    )
     this.searchVideos()
   },
   methods: {
+    async saveAs() {
+      this.v$.$touch()
+      const endpoint = '/v1/save-collection'
+      this.saveLoading = true
+      const response = await this.$api
+        .post(endpoint, {
+          name: this.collectionName,
+          email: this.collectionEmail,
+          password: this.collectionPassword,
+          author: this.collectionAuthor,
+          channels: this.channels,
+        })
+        .catch((err) => {
+          console.error(err.response)
+          if (err.response.data.error === 'Incorrect password') {
+            this.incorrectPassword = true
+          }
+        })
+      this.saveLoading = false
+      if (get(response, 'data')) {
+        console.log('Success')
+        await this.$store.dispatch(
+          'subber/populateCollection',
+          this.collectionName
+        )
+        this.saveSuccess = true
+      }
+    },
+    setSearchInterval() {
+      clearInterval(this.searchInterval)
+      this.searchInterval = setInterval(() => {
+        this.searchVideos()
+      }, 1000 * 60 * 2)
+    },
     showMoreSearchResults() {
       this.searchResultLimit += 4
     },
@@ -210,32 +348,26 @@ export default defineComponent({
       this.searchResults = []
     },
     removeChannel(channel) {
-      this.$store.commit('subber/removeChannel', channel)
+      this.$store.commit('subber/removeChannel', {
+        channel,
+        collectionName: this.currentCollectionName,
+      })
       this.searchVideos()
     },
     async searchForChannels() {
       if (this.query) {
         this.channelSearchLoading = true
 
-        let apiUrl
-        try {
-          apiUrl = `${
-            process.env.VIDEO_API || 'https://subber-api.herokuapp.com'
-          }/v1/channel-search`
-        } catch (err) {
-          console.error(err)
-          apiUrl = 'https://subber-api.herokuapp.com/v1/channel-search'
-        }
-
-        console.log('Sending request to', apiUrl)
-        const resp = await this.$axios
-          .get(apiUrl, {
+        const endpoint = '/v1/channel-search'
+        console.log('Sending request to', endpoint)
+        const resp = await this.$api
+          .get(endpoint, {
             params: {
               query: this.query,
             },
           })
           .catch((err) => {
-            console.error(JSON.stringify(err, null, 2))
+            console.error(err.response)
           })
 
         this.channelSearchLoading = false
@@ -246,13 +378,7 @@ export default defineComponent({
       }
     },
     selectSearchResult(searchResult) {
-      console.log('test')
-      console.log('searchResult', searchResult)
-      console.log('this.channels', this.channels)
-      console.log('this.channels[0]', this.channels[0])
-      console.log('this.channels[1]', this.channels[1])
       this.addChannel(searchResult)
-      this.query = ''
       this.searchResults = this.searchResults.filter((result) => {
         return result.id.channelId !== searchResult.id.channelId
       })
@@ -263,62 +389,65 @@ export default defineComponent({
       this.searchVideos()
     },
     searchVideos: debounce(async function () {
-      this.error = false
-      let apiUrl
-      try {
-        apiUrl = `${
-          process.env.VIDEO_API || 'https://subber-api.herokuapp.com'
-        }/v1/videos`
-      } catch (err) {
-        console.error(err)
-        apiUrl = 'https://subber-api.herokuapp.com/v1/videos'
-      }
+      const search = true
+      if (search) {
+        this.error = false
+        this.loading = true
 
-      this.loading = true
+        const endpoint = '/v1/videos'
+        console.log('Sending request to', endpoint)
+        const resp = await this.$api
+          .get(endpoint, {
+            params: {
+              playlistIds: this.channels.map((channel) => {
+                return channel.id.channelId
+              }),
+            },
+          })
+          .catch((err) => {
+            console.error(err.response)
+          })
 
-      console.log('Sending request to', apiUrl)
-      const resp = await this.$axios
-        .get(apiUrl, {
-          params: {
-            playlistIds: this.channels.map((channel) => {
-              return channel.id.channelId
-            }),
-          },
-        })
-        .catch((err) => {
-          console.error(JSON.stringify(err, null, 2))
-        })
+        this.loading = false
 
-      this.loading = false
+        console.log('Got resp', resp)
 
-      console.log('Got resp', resp)
+        if (resp && resp.data?.videos) {
+          console.log('Got resp.data', resp.data)
+          console.log('Got videos', resp?.data?.videos)
+          this.results = resp.data.videos
+        } else {
+          console.log('No resp.data')
+          this.results = []
+        }
 
-      if (resp && resp.data?.videos) {
-        console.log('Got resp.data', resp.data)
-        console.log('Got videos', resp?.data?.videos)
-        this.results = resp.data.videos
-      } else {
-        console.log('No resp.data')
-        this.results = []
-      }
+        if (resp?.data?.error) {
+          this.error = resp.data.error
+        }
 
-      if (resp?.data?.error) {
-        this.error = resp.data.error
+        // start interval
+        this.setSearchInterval()
       }
     }, 850),
     addChannels(channels) {
-      this.$store.commit('subber/addChannels', channels)
+      this.$store.commit('subber/addChannels', {
+        channels,
+        collectionName: this.currentCollectionName,
+      })
       this.searchVideos()
     },
     addChannel(channel) {
-      this.$store.commit('subber/addChannel', channel)
+      this.$store.commit('subber/addChannel', {
+        channel,
+        collectionName: this.currentCollectionName,
+      })
     },
     deleteChannel(idx) {
-      clearTimeout(this.timeout)
-      this.timeout = setTimeout(() => {
-        this.searchVideos()
-      }, 300)
-      this.$store.commit('subber/deleteChannel', idx)
+      this.$store.commit('subber/deleteChannel', {
+        collectionName: this.currentCollectionName,
+        idx,
+      })
+      this.searchVideos()
     },
   },
 })

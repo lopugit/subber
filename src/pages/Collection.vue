@@ -5,7 +5,7 @@ q-page.flex(
     alignItems: 'center'
   }`
 )
-  search
+  search(:currentCollectionName='$route.params.collectionName')
 </template>
 <script>
 import { defineComponent } from 'vue'

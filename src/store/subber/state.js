@@ -1,17 +1,12 @@
-import simonWhistlerEmpire from './presets/simonWhistlerEmpire'
-import xqcClipsEmpire from './presets/xqcClipsEmpire'
 export default function () {
   const state = {
-    user: {
-      home: {
+    collections: [
+      {
+        name: '',
         channels: [],
       },
-    },
-    embedded: true,
-    aggregates: [
-      ['Simon Whistler Empire', simonWhistlerEmpire],
-      ['xQc Clips Empire', xqcClipsEmpire],
     ],
+    embedded: true,
   }
   window.state = state
   return state

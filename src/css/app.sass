@@ -8,7 +8,7 @@ a.dark
   color: white
   text-decoration: none
 
-@for $i from 0 through 400
+@for $i from 0 through 1800
   .pa-#{$i}
     padding: #{$i}px
   .pt-#{$i}
@@ -133,6 +133,16 @@ a.dark
   max-height: 100%
 .mw-100
   max-width: 100%
+  height: 100%
+.w-full
+  width: 100%
+.hw-full
+  height: 100%
+  width: 100%
+.mh-full
+  max-height: 100%
+.mw-full
+  max-width: 100%
 
 .vis-anim
   transition: opacity 350ms ease-out
@@ -144,7 +154,14 @@ a.dark
 // mods
 .q-field--filled .q-field__control:before
   background-color: transparent !important
-
+.q-field .q-field__bottom
+  padding: 6px 12px
+.q-field--with-bottom
+  padding-bottom: 0px
+  transition: padding-bottom 350ms ease
+.q-field--with-bottom.q-field--error
+  // padding-bottom: 20px
+// custom
 .mobile-spacing
   @media (max-width: 600px)
     padding-left: 8px
@@ -157,4 +174,9 @@ body
 
 .underline
   text-decoration: underline
-
+.capitalize
+  text-transform: capitalize
+.uppercase
+  text-transform: uppercase
+.lowercase
+  text-transform: lowercase

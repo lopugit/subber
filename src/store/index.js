@@ -1,8 +1,8 @@
 import { store } from 'quasar/wrappers'
 import { createStore } from 'vuex'
 import createPersistedState from 'vuex-persistedstate'
+import { get } from 'lodash-es'
 import subber from './subber'
-
 /*
  * If not building with SSR mode, you can
  * directly export the Store instantiation;
@@ -13,7 +13,7 @@ import subber from './subber'
  */
 
 const currentStoreVersion = window.localStorage.getItem('storeVersion')
-const storeVersion = 18
+const storeVersion = 27
 const fullReset = true
 if (!currentStoreVersion || currentStoreVersion < storeVersion) {
   if (fullReset) {
@@ -24,7 +24,7 @@ if (!currentStoreVersion || currentStoreVersion < storeVersion) {
       'vuex',
       JSON.stringify({
         subber: {
-          user: store && store.subber && store.subber.user,
+          user: get(store, 'subber.user', {}),
         },
       })
     )

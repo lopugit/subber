@@ -1,11 +1,11 @@
 <template lang="pug">
-.videos-container.pt-12.pb-24
+.videos-container.pt-24.pb-24
   .flex.flex-row.align-center.pt-12.pb-12.mobile-spacing
     .videos.flex-center(v-if='!loading && videos.length') {{ videos.length }} Results
     .videos.flex-center(v-if='loading')
       | Loading results
       q-spinner.ml-12(color='tertiary', size='1.2em')
-    .toggle-embedded.ml-auto
+    .toggle-embedded.ml-auto(v-if='videos.length')
       q-toggle(
         label='Embedded',
         v-model='embedded',
@@ -15,7 +15,7 @@
   template(v-for='(video, idx) in videos')
     result(v-if='idx < idxLimit', :video='video')
   .load-more.mobile-spacing(v-if='videos.length > idxLimit')
-    q-btn.full-width(color='secondary', @click='idxLimit += 5') Show More
+    q-btn.w-full(color='secondary', @click='idxLimit += 5') Show More
 </template>
 <script>
 import { defineComponent, ref } from 'vue'

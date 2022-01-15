@@ -5,32 +5,9 @@ const routes = [
     children: [{ path: '', component: () => import('pages/Index.vue') }],
   },
   {
-    path: '/simon-whistler-empire',
+    path: '/collections/:collectionName',
     component: () => import('layouts/MainLayout.vue'),
-    children: [
-      {
-        path: '',
-        props: {
-          presetMode: true,
-          aggregate: 'Simon Whistler Empire',
-        },
-        component: () => import('src/components/search.vue'),
-      },
-    ],
-  },
-  {
-    path: '/xqc-clips-empire',
-    component: () => import('layouts/MainLayout.vue'),
-    children: [
-      {
-        path: '',
-        props: {
-          presetMode: true,
-          aggregate: 'xQc Clips Empire',
-        },
-        component: () => import('src/components/search.vue'),
-      },
-    ],
+    children: [{ path: '', component: () => import('pages/Collection.vue') }],
   },
   {
     path: '/privacy-policy',

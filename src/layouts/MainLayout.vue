@@ -28,16 +28,20 @@ q-layout(view='lHh Lpr lFf')
             aria-label='Menu',
             @click='leftDrawerOpen = false'
           )
+      q-item(clickable, href='/')
+        q-item-section.text-bold
+          | Home
       q-item
         q-item-section.text-bold
-          | Presets
-      q-item(clickable, href='/')
-        q-item-section
-          q-item-label Home
-      template(v-for='(aggregate, idx) in aggregates')
-        q-item(clickable, :href='aggregate[0].replace(/ /gi, "-")')
+          | Collections
+      template(v-for='collection in collections')
+        q-item(
+          v-if='collection.name',
+          clickable,
+          :href='"/collections/" + collection.name.replace(/ /gi, "-")'
+        )
           q-item-section
-            q-item-label {{ aggregate[0] }}
+            q-item-label.capitalize {{ collection.name }}
       q-item.p-12
         q-item-section.text-bold
           | Privacy
@@ -52,7 +56,7 @@ q-layout(view='lHh Lpr lFf')
           q-item-label Google Privacy Policy
   q-page-container
     router-view
-  .footer.full-width.bg-primary.flex-center
+  .footer.w-full.bg-primary.flex-center
     q-list.footer-list
       q-item
         q-item-section
@@ -81,13 +85,13 @@ export default defineComponent({
     return {}
   },
   computed: {
-    aggregates: {
+    collections: {
       get() {
-        return this.$store.state.subber.aggregates
+        return this.$store.state.subber.collections
       },
       set(val) {
         this.$store.commit('subber/thing', {
-          key: 'aggregates',
+          key: 'collections',
           val,
         })
       },
