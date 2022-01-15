@@ -29,6 +29,7 @@
     "dotenv": "^10.0.0",
     "express": "^4.17.2",
     "express-sslify": "^1.2.0",
+    "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
     "prettier": "^2.2.1",
     "pug": "^3.0.2",
