@@ -18,7 +18,7 @@
     q-btn.w-full(color='secondary', @click='idxLimit += 10') Show More
 </template>
 <script>
-import { defineComponent, ref } from 'vue'
+import { defineComponent } from 'vue'
 import result from 'components/result.vue'
 
 export default defineComponent({
