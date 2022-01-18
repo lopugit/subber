@@ -1,5 +1,6 @@
 import { set, get } from 'lodash-es'
-
+import { helpers } from '../../boot/helpers.js'
+const { apiName } = helpers
 export function thing(state, args) {
   set(state, args.key, args.val)
 }
@@ -7,6 +8,21 @@ export function thingpush(state, args) {
   const toPush = get(state, args.key)
   if (toPush && toPush.push && typeof toPush.push === 'function') {
     toPush.push(args.val)
+  }
+}
+
+export function addCollection(state, newCollection) {
+  const collectionIndex = state.collections.findIndex(
+    (collection) => apiName(collection.name) === apiName(newCollection.name)
+  )
+
+  console.log('newCollection', newCollection)
+  console.log('collectionIndex', collectionIndex)
+
+  if (collectionIndex !== -1) {
+    state.collections.splice(collectionIndex, 1, newCollection)
+  } else {
+    state.collections.push(newCollection)
   }
 }
 
@@ -55,15 +71,8 @@ export function clearChannels(state) {
   state.channels = []
 }
 
-export function addCollection(state, { collectionName = '', collection }) {
-  thing(state, {
-    key: 'collections.' + collectionName,
-    val: collection,
-  })
-}
-
 function findCollection(state, collectionName) {
   return state.collections.find(
-    (collection) => collection.name === collectionName
+    (collection) => apiName(collection.name) === apiName(collectionName)
   )
 }

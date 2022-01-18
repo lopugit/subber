@@ -1,11 +1,13 @@
 <template lang="pug">
-.collections-list.l-container
+.collections-list.l-container.pb-96.mt-48
+  .or-create-your-own
+    q-btn.full-width(color='primary', to='/create') Create your own
   template(v-for='(collection, idx) in collections')
     q-card.collection.mt-48(dark, v-if='idx < idxLimit')
       q-card-section
         router-link.capitalize.text-h5.text-bold(
           :to='"/collections/" + collection.name.replace(/ /gi, "-").toLowerCase()'
-        ) {{ collection.name }}
+        ) {{ renderableName(collection.name) }}
         .views-count {{ collection.views || 0 }} views
       q-card-section.flex-row.mw-100.flex-wrap
         template(v-for='(channel, channelIdx) in collection.channels')

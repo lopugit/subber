@@ -11,7 +11,7 @@ q-layout(view='lHh Lpr lFf')
         @click='leftDrawerOpen = !leftDrawerOpen'
       )
       q-toolbar-title.text-bold(style='padding-left: 14px')
-        a(to='/') Subber
+        a(to='/') ytSubber
 
       .app-description-container(style='padding-right: 14px')
         | The best app for finding your favourite content
@@ -31,8 +31,12 @@ q-layout(view='lHh Lpr lFf')
       q-item(clickable, to='/')
         q-item-section.text-bold
           | Home
-      q-item.mt-24.text-bold(clickable, to='/collections')
-        | Collections
+      q-item.text-bold(clickable, to='/create')
+        q-item-section
+          | Create
+      q-item.text-bold(clickable, to='/collections')
+        q-item-section
+          | Collections
       template(v-for='collection in collections')
         q-item(
           v-if='collection.name',
@@ -40,19 +44,19 @@ q-layout(view='lHh Lpr lFf')
           :to='"/collections/" + collection.name.replace(/ /gi, "-")'
         )
           q-item-section
-            q-item-label.capitalize {{ collection.name }}
-      q-item.p-12.mt-24
+            q-item-label.capitalize.pl-12 {{ collection.name }}
+      q-item.p-12
         q-item-section.text-bold
           | Privacy
       q-item(clickable, to='/privacy-policy')
         q-item-section
-          q-item-label Privacy Policy
+          q-item-label.pl-12 Privacy Policy
       q-item(clickable, href='https://www.youtube.com/t/terms')
         q-item-section
-          q-item-label YouTube Terms of Service
+          q-item-label.pl-12 YouTube Terms of Service
       q-item(clickable, href='https://policies.google.com/privacy')
         q-item-section
-          q-item-label Google Privacy Policy
+          q-item-label.pl-12 Google Privacy Policy
   q-page-container
     router-view
   .footer.w-full.bg-primary.flex-center

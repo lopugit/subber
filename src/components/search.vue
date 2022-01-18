@@ -11,15 +11,15 @@
       maxWidth: '100%'
     }`)
     .search-container.pt-12.mobile-spacing
-      .collection-search.pt-12.flex.flex-col(v-if='currentCollectionName')
-        .text-h4.text-center.capitalize(style='font-weight: 700')
-          | {{ currentCollectionName.replace(/-/gi, ' ') }}
-        //- .views-count {{ collection.views || 0 }} views
+      .collection-search.pt-24.flex.flex-col(v-if='currentCollectionName')
+        .text-h4.capitalize(style='font-weight: 700')
+          | {{ renderableName(currentCollectionName) }}
+        .views-count {{ collectionViews }} views
       template(v-if='!currentCollectionName')
         .input-container.pt-12
           q-input.channel-search(
             v-model='query',
-            placeholder='Start typing to search for channels',
+            placeholder='Start typing to search for channels to add to your collection',
             filled,
             outlined,
             dark,
@@ -70,7 +70,7 @@
             .clear-btn.flex.w-100.pt-12(v-if='searchResults.length')
               q-btn.ml-auto(@click='clearSearch', color='secondary') Clear
       .profile-pictures.pt-24.flex.flex-col.flex-wrap(v-if='channels.length')
-        .title Selected Channels
+        .title {{ currentCollectionName ? 'Featured Channels' : 'Selected Channels' }}
         .flex.flex-row
           template(v-for='channel in channels')
             .channel-icon.relative.mr-16.mt-8
@@ -93,107 +93,106 @@
                   v-if='!currentCollectionName'
                 )
                   q-icon(name='close')
-      template(v-if='!currentCollectionName')
-        .save-as-container.pt-18(v-if='channels.length')
-          .flex-align-center.flex-row
-            q-btn.pl-12.pr-12(
-              color='accent',
-              dense,
-              @click='saveIntent = !saveIntent'
-            ) Save Collection
-          q-dialog(
-            v-model='saveIntent',
-            @hide='saveSuccess = false; incorrectPassword = false'
-          )
-            q-card(dark)
-              q-card-section.mw-100
-                .message-section.flex-col(v-if='saveSuccess') Congratulations! Your collection has been saved.
-                  .message You can access it here:
-                  router-link.underline.pt-4(
-                    :to='`${origin}/collections/${collectionNameUrl}`'
-                  ) {{ origin }}/collections/{{ collectionNameUrl }}
-
-                .form-section.flex-center.flex-col(v-if='!saveSuccess')
-                  q-input.w-420.mw-100.pb-24(
-                    v-model='collectionName',
-                    label='Collection Name',
-                    placeholder='Enter a collection name to save as',
-                    dense,
-                    dark,
-                    v-show='saveIntent',
-                    @blur='v$.collectionName.$touch',
-                    :rules=`[
-                      val => !v$.collectionName.$error || v$.collectionName.$errors[0].$message.replace('Value', 'Collection Name'),
-                      val => !incorrectPassword || 'This collection name already exists and the wrong password was used to modify it'
-                    ]`,
-                    reactive-rules
-                  )
-                  q-input.w-full.pb-24(
-                    v-model='collectionAuthor',
-                    label='Author',
-                    placeholder='Enter an Author name',
-                    dense,
-                    dark,
-                    @blur='v$.collectionAuthor.$touch',
-                    :rules=`[
-                      val => !this.v$.collectionAuthor.$error || this.v$.collectionAuthor.$errors[0].$message.replace('Value', 'Author')
-                    ]`,
-                    reactive-rules
-                  )
-                  q-input.w-full.pb-24(
-                    v-model='collectionEmail',
-                    label='Email',
-                    placeholder='Enter an email incase you forget the password',
-                    dense,
-                    dark,
-                    @blur='v$.collectionEmail.$touch',
-                    :rules=`[
-                      val => !this.v$.collectionEmail.$error || this.v$.collectionEmail.$errors[0].$message.replace('Value', 'Email')
-                    ]`,
-                    reactive-rules
-                  )
-                  q-input.w-full.pb-24(
-                    v-model='collectionPassword',
-                    label='Password',
-                    placeholder='Enter a password so you can edit it later',
-                    dense,
-                    :type='isPwd ? "password" : "text"',
-                    dark,
-                    @blur='v$.collectionPassword.$touch',
-                    :rules=`[
-                      val => !v$.collectionPassword.$error || v$.collectionPassword.$errors[0].$message.replace('Value', 'Password')
-                    ]`,
-                    reactive-rules
-                  )
-                    template(v-slot:append)
-                      q-icon.cursor-pointer(
-                        :name='isPwd ? "visibility_off" : "visibility"',
-                        @click='isPwd = !isPwd'
-                      )
-                  q-btn.w-full(@click='saveAs', color='primary') {{ saveLoading ? 'Saving' : 'Save' }}
-                    q-spinner(
-                      :style=`{
-                      marginLeft: '10px'
-                    }`,
-                      v-if='saveLoading',
-                      color='tertiary',
-                      size='1.2em'
-                    )
-        .collections-container.pt-24(
-          v-if='collections.length && collections.length !== 1'
+      .save-as-container.pt-18(v-if='channels.length')
+        .flex-align-center.flex-row
+          q-btn.pl-12.pr-12(
+            color='accent',
+            dense,
+            @click='saveIntent = !saveIntent'
+          ) {{ currentCollectionName ? 'Fork Collection' : 'Save Collection' }}
+        q-dialog(
+          v-model='saveIntent',
+          @hide='saveSuccess = false; incorrectPassword = false'
         )
-          .pb-12 Some suggested networks
-          template(v-for='collection in collections')
-            q-btn.pl-10.pr-10(
-              v-if='collection.name',
-              style='margin-right: 12px',
-              outline,
-              dense,
-              rounded,
-              color='accent',
-              @click='addChannels(collection.channels || [])'
-            )
-              | {{ collection.name }}
+          q-card(dark)
+            q-card-section.mw-100
+              .message-section.flex-col(v-if='saveSuccess') Congratulations! Your collection has been saved.
+                .message You can access it here:
+                router-link.underline.pt-4(
+                  :to='`/collections/${apiName(collectionName)}`'
+                ) {{ origin }}/collections/{{ apiName(collectionName) }}
+
+              .form-section.flex-center.flex-col(v-if='!saveSuccess')
+                q-input.w-420.mw-100.pb-24(
+                  v-model='collectionName',
+                  label='Collection Name',
+                  placeholder='Enter a collection name to save as',
+                  dense,
+                  dark,
+                  v-show='saveIntent',
+                  @blur='v$.collectionName.$touch',
+                  :rules=`[
+                    val => !v$.collectionName.$error || v$.collectionName.$errors[0].$message.replace('Value', 'Collection Name'),
+                    val => !incorrectPassword || 'This collection name already exists and the wrong password was used to modify it'
+                  ]`,
+                  reactive-rules
+                )
+                q-input.w-full.pb-24(
+                  v-model='collectionAuthor',
+                  label='Author',
+                  placeholder='Enter an Author name',
+                  dense,
+                  dark,
+                  @blur='v$.collectionAuthor.$touch',
+                  :rules=`[
+                    val => !this.v$.collectionAuthor.$error || this.v$.collectionAuthor.$errors[0].$message.replace('Value', 'Author')
+                  ]`,
+                  reactive-rules
+                )
+                q-input.w-full.pb-24(
+                  v-model='collectionEmail',
+                  label='Email',
+                  placeholder='Enter an email incase you forget the password',
+                  dense,
+                  dark,
+                  @blur='v$.collectionEmail.$touch',
+                  :rules=`[
+                    val => !this.v$.collectionEmail.$error || this.v$.collectionEmail.$errors[0].$message.replace('Value', 'Email')
+                  ]`,
+                  reactive-rules
+                )
+                q-input.w-full.pb-24(
+                  v-model='collectionPassword',
+                  label='Password',
+                  placeholder='Enter a password so you can edit it later',
+                  dense,
+                  :type='isPwd ? "password" : "text"',
+                  dark,
+                  @blur='v$.collectionPassword.$touch',
+                  :rules=`[
+                    val => !v$.collectionPassword.$error || v$.collectionPassword.$errors[0].$message.replace('Value', 'Password')
+                  ]`,
+                  reactive-rules
+                )
+                  template(v-slot:append)
+                    q-icon.cursor-pointer(
+                      :name='isPwd ? "visibility_off" : "visibility"',
+                      @click='isPwd = !isPwd'
+                    )
+                q-btn.w-full(@click='saveAs', color='primary') {{ saveLoading ? 'Saving' : 'Save' }}
+                  q-spinner(
+                    :style=`{
+                    marginLeft: '10px'
+                  }`,
+                    v-if='saveLoading',
+                    color='tertiary',
+                    size='1.2em'
+                  )
+      //- .collections-container.pt-24(
+      //-   v-if='collections.length && collections.length !== 1 && !currentCollectionName'
+      //- )
+      //-   .pb-12 Some suggested networks
+      //-   template(v-for='collection in collections')
+      //-     q-btn.pl-10.pr-10(
+      //-       v-if='collection.name',
+      //-       style='margin-right: 12px',
+      //-       outline,
+      //-       dense,
+      //-       rounded,
+      //-       color='accent',
+      //-       @click='addChannels(collection.channels || [])'
+      //-     )
+      //-       | {{ renderableName(collection.name) }}
       .error-container.pt-24(v-if='error')
         q-banner.bg-negative(color='error', rounded, inline-actions)
           | {{ error }}
@@ -252,11 +251,8 @@ export default defineComponent({
     }
   },
   computed: {
-    apiFriendlyCurrentCollectionName() {
-      return this.currentCollectionName.replace(/-/gi, ' ').toLowerCase()
-    },
-    collectionNameUrl() {
-      return this.collectionName.replace(/ /gi, '-').toLowerCase()
+    collectionViews() {
+      return get(this.collection, 'views', 0)
     },
     origin() {
       return location.origin
@@ -275,7 +271,7 @@ export default defineComponent({
     collection() {
       return this.collections.find(
         (collection) =>
-          collection.name === this.apiFriendlyCurrentCollectionName
+          collection.name === this.apiName(this.currentCollectionName)
       )
     },
     channels: {
@@ -284,13 +280,16 @@ export default defineComponent({
       },
       set(val) {
         this.$store.commit('subber/thing', {
-          key: 'collections.' + this.currentCollectionName,
+          key: 'collections.' + this.apiName(this.currentCollectionName),
           val,
         })
       },
     },
   },
   watch: {
+    async currentCollectionName() {
+      await this.init()
+    },
     query() {
       if (this.query) {
         this.searchForChannels()
@@ -300,27 +299,31 @@ export default defineComponent({
     },
   },
   async mounted() {
-    await this.$store.dispatch(
-      'subber/populateCollection',
-      this.apiFriendlyCurrentCollectionName
-    )
-    this.searchVideos()
-
-    // count collection view
-    if (this.apiFriendlyCurrentCollectionName) {
-      const response = await this.$api
-        .get('/v1/count-view', {
-          params: {
-            name: this.apiFriendlyCurrentCollectionName,
-          },
-        })
-        .catch((err) => console.error(err.response.data))
-      if (get(response, 'data.counted')) {
-        console.log('View counted')
-      }
-    }
+    await this.init()
   },
   methods: {
+    async init() {
+      this.results = []
+      await this.$store.dispatch(
+        'subber/fetchCollection',
+        this.apiName(this.currentCollectionName)
+      )
+      this.searchVideos()
+
+      // count collection view
+      if (this.apiName(this.currentCollectionName)) {
+        const response = await this.$api
+          .get('/v1/count-view', {
+            params: {
+              name: this.apiName(this.currentCollectionName),
+            },
+          })
+          .catch((err) => console.error(err.response.data))
+        if (get(response, 'data.counted')) {
+          console.log('View counted')
+        }
+      }
+    },
     async saveAs() {
       this.v$.$touch()
       const endpoint = '/v1/save-collection'
@@ -343,17 +346,17 @@ export default defineComponent({
       if (get(response, 'data')) {
         console.log('Success')
         await this.$store.dispatch(
-          'subber/populateCollection',
+          'subber/fetchCollection',
           this.collectionName
         )
         this.saveSuccess = true
       }
     },
     setSearchInterval() {
-      clearInterval(this.searchInterval)
-      this.searchInterval = setInterval(() => {
-        this.searchVideos()
-      }, 1000 * 60 * 2)
+      // clearInterval(this.searchInterval)
+      // this.searchInterval = setInterval(() => {
+      //   this.searchVideos()
+      // }, 1000 * 60 * 2)
     },
     showMoreSearchResults() {
       this.searchResultLimit += 4
@@ -365,7 +368,7 @@ export default defineComponent({
     removeChannel(channel) {
       this.$store.commit('subber/removeChannel', {
         channel,
-        collectionName: this.currentCollectionName,
+        collectionName: this.apiName(this.currentCollectionName),
       })
       this.searchVideos()
     },
@@ -420,23 +423,19 @@ export default defineComponent({
             },
           })
           .catch((err) => {
-            console.error(err.response)
+            console.error(err.response.data)
           })
 
         this.loading = false
 
-        console.log('Got resp', resp)
-
-        if (resp && resp.data?.videos) {
-          console.log('Got resp.data', resp.data)
-          console.log('Got videos', resp?.data?.videos)
+        if (get(resp, 'data.videos')) {
           this.results = resp.data.videos
         } else {
           console.log('No resp.data')
           this.results = []
         }
 
-        if (resp?.data?.error) {
+        if (get(resp, 'data.error')) {
           this.error = resp.data.error
         }
 
@@ -447,19 +446,19 @@ export default defineComponent({
     addChannels(channels) {
       this.$store.commit('subber/addChannels', {
         channels,
-        collectionName: this.currentCollectionName,
+        collectionName: this.apiName(this.currentCollectionName),
       })
       this.searchVideos()
     },
     addChannel(channel) {
       this.$store.commit('subber/addChannel', {
         channel,
-        collectionName: this.currentCollectionName,
+        collectionName: this.apiName(this.currentCollectionName),
       })
     },
     deleteChannel(idx) {
       this.$store.commit('subber/deleteChannel', {
-        collectionName: this.currentCollectionName,
+        collectionName: this.apiName(this.currentCollectionName),
         idx,
       })
       this.searchVideos()
