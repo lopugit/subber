@@ -15,7 +15,7 @@
   template(v-for='(video, idx) in videos')
     result(v-if='idx < idxLimit', :video='video')
   .load-more.mobile-spacing(v-if='videos.length > idxLimit')
-    q-btn.w-full(color='secondary', @click='idxLimit += 5') Show More
+    q-btn.w-full(color='secondary', @click='idxLimit += 10') Show More
 </template>
 <script>
 import { defineComponent, ref } from 'vue'
@@ -38,7 +38,7 @@ export default defineComponent({
   },
   data() {
     return {
-      idxLimit: ref(5),
+      idxLimit: 10,
     }
   },
   computed: {
