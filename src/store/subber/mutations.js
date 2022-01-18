@@ -16,9 +16,6 @@ export function addCollection(state, newCollection) {
     (collection) => apiName(collection.name) === apiName(newCollection.name)
   )
 
-  console.log('newCollection', newCollection)
-  console.log('collectionIndex', collectionIndex)
-
   if (collectionIndex !== -1) {
     state.collections.splice(collectionIndex, 1, newCollection)
   } else {

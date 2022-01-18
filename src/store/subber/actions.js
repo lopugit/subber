@@ -13,10 +13,6 @@ export async function fetchCollection(store, collectionName) {
     })
     .catch((err) => console.error(err.response))
 
-  console.log(
-    "get(response, 'data.collection')",
-    get(response, 'data.collection')
-  )
   if (get(response, 'data.collection')) {
     const newCollection = response.data.collection
     store.commit('addCollection', newCollection)

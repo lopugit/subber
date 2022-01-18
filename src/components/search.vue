@@ -312,16 +312,13 @@ export default defineComponent({
 
       // count collection view
       if (this.apiName(this.currentCollectionName)) {
-        const response = await this.$api
+        await this.$api
           .get('/v1/count-view', {
             params: {
               name: this.apiName(this.currentCollectionName),
             },
           })
           .catch((err) => console.error(err.response.data))
-        if (get(response, 'data.counted')) {
-          console.log('View counted')
-        }
       }
     },
     async saveAs() {
@@ -344,7 +341,6 @@ export default defineComponent({
         })
       this.saveLoading = false
       if (get(response, 'data')) {
-        console.log('Success')
         await this.$store.dispatch(
           'subber/fetchCollection',
           this.collectionName
@@ -377,7 +373,6 @@ export default defineComponent({
         this.channelSearchLoading = true
 
         const endpoint = '/v1/channel-search'
-        console.log('Sending request to', endpoint)
         const resp = await this.$api
           .get(endpoint, {
             params: {
@@ -391,7 +386,6 @@ export default defineComponent({
         this.channelSearchLoading = false
         if (resp && resp.data) {
           this.searchResults = resp.data.results
-          console.log('Got resp searchForChannels', resp)
         }
       }
     },
@@ -413,7 +407,6 @@ export default defineComponent({
         this.loading = true
 
         const endpoint = '/v1/videos'
-        console.log('Sending request to', endpoint)
         const resp = await this.$api
           .get(endpoint, {
             params: {
@@ -431,7 +424,6 @@ export default defineComponent({
         if (get(resp, 'data.videos')) {
           this.results = resp.data.videos
         } else {
-          console.log('No resp.data')
           this.results = []
         }
 

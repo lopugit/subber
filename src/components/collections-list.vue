@@ -2,6 +2,16 @@
 .collections-list.l-container.pb-96.mt-48
   .or-create-your-own
     q-btn.full-width(color='primary', to='/create') Create your own
+  .loader-spinner.w-full.flex-center
+    q-spinner.mt-24.mb-24(
+      :style=`{
+        marginLeft: '10px'
+      }`,
+      v-if='loading',
+      color='tertiary',
+      size='2.5em'
+    )
+
   template(v-for='(collection, idx) in collections')
     q-card.collection.mt-48(dark, v-if='idx < idxLimit')
       q-card-section
@@ -42,6 +52,7 @@ export default defineComponent({
     return {
       collections: [],
       idxLimit: 10,
+      loading: false,
     }
   },
   mounted() {
@@ -49,10 +60,11 @@ export default defineComponent({
   },
   methods: {
     async getCollections() {
+      this.loading = true
       const response = await this.$api
         .get('/v1/collections')
         .catch((err) => console.error(err.response.data))
-      console.log(response)
+      this.loading = false
       if (get(response, 'data.collections')) {
         this.collections = get(response, 'data.collections')
       }
