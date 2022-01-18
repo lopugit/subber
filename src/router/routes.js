@@ -5,6 +5,11 @@ const routes = [
     children: [{ path: '', component: () => import('pages/Index.vue') }],
   },
   {
+    path: '/collections',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/Collections.vue') }],
+  },
+  {
     path: '/collections/:collectionName',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/Collection.vue') }],

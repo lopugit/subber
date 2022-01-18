@@ -1,0 +1,60 @@
+<template lang="pug">
+.collections-list.l-container
+  template(v-for='(collection, idx) in collections')
+    q-card.collection.mt-48(dark, v-if='idx < idxLimit')
+      q-card-section
+        router-link.capitalize.text-h5.text-bold(
+          :to='"/collections/" + collection.name.replace(/ /gi, "-").toLowerCase()'
+        ) {{ collection.name }}
+        .views-count {{ collection.views || 0 }} views
+      q-card-section.flex-row.mw-100.flex-wrap
+        template(v-for='(channel, channelIdx) in collection.channels')
+          .channel-icon.relative.mr-16.mb-8
+            .channel-icon-inner
+              .channel-icon-img
+                img(
+                  :src='channel.snippet.thumbnails.default.url',
+                  :style=`{
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '50%'
+                  }`
+                )
+      q-card-actions(align='right')
+        router-link.w-full(
+          :to='"/collections/" + collection.name.replace(/ /gi, "-").toLowerCase()'
+        )
+          q-btn.w-full(color='primary') Visit
+  q-btn.mt-24.w-full(
+    color='primary',
+    @click='idxLimit += 10',
+    v-if='collections.length > idxLimit'
+  ) Load More
+</template>
+<script>
+import { defineComponent } from 'vue'
+import { get } from 'lodash-es'
+export default defineComponent({
+  name: 'CollectionsList',
+  data() {
+    return {
+      collections: [],
+      idxLimit: 10,
+    }
+  },
+  mounted() {
+    this.getCollections()
+  },
+  methods: {
+    async getCollections() {
+      const response = await this.$api
+        .get('/v1/collections')
+        .catch((err) => console.error(err.response.data))
+      console.log(response)
+      if (get(response, 'data.collections')) {
+        this.collections = get(response, 'data.collections')
+      }
+    },
+  },
+})
+</script>

@@ -11,7 +11,7 @@ q-layout(view='lHh Lpr lFf')
         @click='leftDrawerOpen = !leftDrawerOpen'
       )
       q-toolbar-title.text-bold(style='padding-left: 14px')
-        a(href='/') Subber
+        a(to='/') Subber
 
       .app-description-container(style='padding-right: 14px')
         | The best app for finding your favourite content
@@ -28,24 +28,23 @@ q-layout(view='lHh Lpr lFf')
             aria-label='Menu',
             @click='leftDrawerOpen = false'
           )
-      q-item(clickable, href='/')
+      q-item(clickable, to='/')
         q-item-section.text-bold
           | Home
-      q-item
-        q-item-section.text-bold
-          | Collections
+      q-item.mt-24.text-bold(clickable, to='/collections')
+        | Collections
       template(v-for='collection in collections')
         q-item(
           v-if='collection.name',
           clickable,
-          :href='"/collections/" + collection.name.replace(/ /gi, "-")'
+          :to='"/collections/" + collection.name.replace(/ /gi, "-")'
         )
           q-item-section
             q-item-label.capitalize {{ collection.name }}
-      q-item.p-12
+      q-item.p-12.mt-24
         q-item-section.text-bold
           | Privacy
-      q-item(clickable, href='/privacy-policy')
+      q-item(clickable, to='/privacy-policy')
         q-item-section
           q-item-label Privacy Policy
       q-item(clickable, href='https://www.youtube.com/t/terms')
@@ -57,10 +56,10 @@ q-layout(view='lHh Lpr lFf')
   q-page-container
     router-view
   .footer.w-full.bg-primary.flex-center
-    q-list.footer-list
+    q-list.footer-list.l-container
       q-item
         q-item-section
-          a(href='/privacy-policy') Privacy Policy
+          a(to='/privacy-policy') Privacy Policy
       q-item
         q-item-section
           a(href='https://www.youtube.com/t/terms') YouTube Terms of Service
@@ -82,21 +81,21 @@ export default defineComponent({
     }
   },
   data() {
-    return {}
+    return {
+      collections: [
+        {
+          name: 'Simon Whistler',
+        },
+        {
+          name: 'XQC',
+        },
+        {
+          name: 'Lopu',
+        },
+      ],
+    }
   },
-  computed: {
-    collections: {
-      get() {
-        return this.$store.state.subber.collections
-      },
-      set(val) {
-        this.$store.commit('subber/thing', {
-          key: 'collections',
-          val,
-        })
-      },
-    },
-  },
+  computed: {},
 })
 </script>
 <style lang="sass">
@@ -109,5 +108,4 @@ export default defineComponent({
 .footer-list
   margin-left: auto
   margin-right: auto
-  max-width: 600px
 </style>

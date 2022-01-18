@@ -7,16 +7,14 @@
     width: '100%'
   }`
 )
-  .latest-vids-container.pt-12(
-    :style=`{
-      maxWidth: '100%',
-      width: '600px'
-    }`
-  )
+  .latest-vids.l-container.pt-12(:style=`{
+      maxWidth: '100%'
+    }`)
     .search-container.pt-12.mobile-spacing
       .collection-search.pt-12.flex.flex-col(v-if='currentCollectionName')
         .text-h4.text-center.capitalize(style='font-weight: 700')
           | {{ currentCollectionName.replace(/-/gi, ' ') }}
+        //- .views-count {{ collection.views || 0 }} views
       template(v-if='!currentCollectionName')
         .input-container.pt-12
           q-input.channel-search(
@@ -111,8 +109,8 @@
               q-card-section.mw-100
                 .message-section.flex-col(v-if='saveSuccess') Congratulations! Your collection has been saved.
                   .message You can access it here:
-                  a.underline.pt-4(
-                    :href='`${origin}/collections/${collectionNameUrl}`'
+                  router-link.underline.pt-4(
+                    :to='`${origin}/collections/${collectionNameUrl}`'
                   ) {{ origin }}/collections/{{ collectionNameUrl }}
 
                 .form-section.flex-center.flex-col(v-if='!saveSuccess')
@@ -254,6 +252,9 @@ export default defineComponent({
     }
   },
   computed: {
+    apiFriendlyCurrentCollectionName() {
+      return this.currentCollectionName.replace(/-/gi, ' ').toLowerCase()
+    },
     collectionNameUrl() {
       return this.collectionName.replace(/ /gi, '-').toLowerCase()
     },
@@ -274,7 +275,7 @@ export default defineComponent({
     collection() {
       return this.collections.find(
         (collection) =>
-          collection.name === this.currentCollectionName.replace(/-/gi, ' ')
+          collection.name === this.apiFriendlyCurrentCollectionName
       )
     },
     channels: {
@@ -301,9 +302,23 @@ export default defineComponent({
   async mounted() {
     await this.$store.dispatch(
       'subber/populateCollection',
-      this.currentCollectionName
+      this.apiFriendlyCurrentCollectionName
     )
     this.searchVideos()
+
+    // count collection view
+    if (this.apiFriendlyCurrentCollectionName) {
+      const response = await this.$api
+        .get('/v1/count-view', {
+          params: {
+            name: this.apiFriendlyCurrentCollectionName,
+          },
+        })
+        .catch((err) => console.error(err.response.data))
+      if (get(response, 'data.counted')) {
+        console.log('View counted')
+      }
+    }
   },
   methods: {
     async saveAs() {
