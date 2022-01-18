@@ -1,19 +1,18 @@
 <template lang="pug">
 .collections-list.l-container.pb-96.mt-48
-  .or-create-your-own
+  .or-create-your-own.pb-12
     q-btn.full-width(color='primary', to='/create') Create your own
-  .loader-spinner.w-full.flex-center
-    q-spinner.mt-24.mb-24(
+  .loader-spinner.w-full.flex-center.pb-12(v-if='loading')
+    q-spinner(
       :style=`{
         marginLeft: '10px'
       }`,
-      v-if='loading',
       color='tertiary',
       size='2.5em'
     )
-
+  .results-count-container.pb-12.pt-24(v-if='collections.length') {{ collections.length }} Results
   template(v-for='(collection, idx) in collections')
-    q-card.collection.mt-48(dark, v-if='idx < idxLimit')
+    q-card.collection.mb-48(dark, v-if='idx < idxLimit')
       q-card-section
         router-link.capitalize.text-h5.text-bold(
           :to='"/collections/" + collection.name.replace(/ /gi, "-").toLowerCase()'
