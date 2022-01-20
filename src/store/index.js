@@ -13,7 +13,7 @@ import subber from './subber'
  */
 
 const currentStoreVersion = window.localStorage.getItem('storeVersion')
-const storeVersion = 28
+const storeVersion = 29
 const fullReset = true
 if (!currentStoreVersion || currentStoreVersion < storeVersion) {
   if (fullReset) {

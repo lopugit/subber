@@ -94,6 +94,14 @@ a.dark
   display: flex
   flex-direction: column
 
+.grid
+  display: grid
+
+@for $i from 0 through 24
+  .grid-col-#{$i}
+    display: grid
+    grid-template-columns: repeat(#{$i}, 1fr)
+
 .relative
   position: relative
 .absolute
@@ -172,8 +180,8 @@ a.dark
   max-width: 100%
 .mobile-spacing
   @media (max-width: 600px)
-    padding-left: 8px
-    padding-right: 8px
+    margin-left: 8px
+    margin-right: 8px
 
 body
   background: #0F0F0F
@@ -188,3 +196,4 @@ body
   text-transform: uppercase
 .lowercase
   text-transform: lowercase
+

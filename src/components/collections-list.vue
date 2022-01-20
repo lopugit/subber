@@ -1,6 +1,6 @@
 <template lang="pug">
 .collections-list.l-container.pb-96.mt-48
-  .or-create-your-own.pb-12
+  .mobile-spacing.or-create-your-own.pb-12
     q-btn.full-width(color='primary', to='/create') Create your own
   .loader-spinner.w-full.flex-center.pb-12(v-if='loading')
     q-spinner(
@@ -10,27 +10,30 @@
       color='tertiary',
       size='2.5em'
     )
-  .results-count-container.pb-12.pt-24(v-if='collections.length') {{ collections.length }} Results
+  .mobile-spacing.results-count-container.pb-12.pt-24(
+    v-if='collections.length'
+  ) {{ collections.length }} Results
   template(v-for='(collection, idx) in collections')
-    q-card.collection.mb-48(dark, v-if='idx < idxLimit')
+    q-card.mobile-spacing.collection.mb-24(dark, v-if='idx < idxLimit')
       q-card-section
         router-link.capitalize.text-h5.text-bold(
           :to='"/collections/" + collection.name.replace(/ /gi, "-").toLowerCase()'
         ) {{ renderableName(collection.name) }}
         .views-count {{ collection.views || 0 }} views
       q-card-section.flex-row.mw-100.flex-wrap
-        template(v-for='(channel, channelIdx) in collection.channels')
-          .channel-icon.relative.mr-16.mb-8
-            .channel-icon-inner
-              .channel-icon-img
-                img(
-                  :src='channel.snippet.thumbnails.default.url',
-                  :style=`{
+        .channel-icon.relative.mr-14.mb-8(
+          v-for='(channel, channelIdx) in collection.channels'
+        )
+          .channel-icon-inner
+            .channel-icon-img
+              img(
+                :src='channel.snippet.thumbnails.default.url',
+                :style=`{
                     width: '40px',
                     height: '40px',
                     borderRadius: '50%'
                   }`
-                )
+              )
       q-card-actions(align='right')
         router-link.w-full(
           :to='"/collections/" + collection.name.replace(/ /gi, "-").toLowerCase()'

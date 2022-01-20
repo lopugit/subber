@@ -6,7 +6,7 @@ export default function () {
         channels: [],
       },
     ],
-    embedded: true,
+    embedded: false,
   }
   window.state = state
   return state
