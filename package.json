@@ -10,11 +10,7 @@
     "dev.dev": "npm run stop.dev ; npm run start.dev",
     "stop.dev": "pm2 delete ecosystem.config.js --name subber-dev",
     "start.dev": "pm2 start ecosystem.config.js --name subber-dev",
-    "build-netlify": "quasar build ; cp _redirects ./dist/spa/",
-    "build": "quasar build",
-    "start": "node server.js",
-    "heroku-postbuild": "npm i ; npm run build",
-    "buildTailwind": "npx tailwindcss -i ./src/css/tailwind.input.css -o ./src/css/tailwind.output.css",
+    "build": "quasar build ; cp _redirects ./dist/spa/",
     "log.dev": "pm2 log subber-dev",
     "test": "echo \"No test specified\" && exit 0"
   },
