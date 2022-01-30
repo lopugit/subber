@@ -41,9 +41,9 @@
           q-btn.w-full(color='primary') Visit
   q-btn.mt-24.w-full(
     color='primary',
-    @click='idxLimit += 10',
+    @click='idxLimit += 40',
     v-if='collections.length > idxLimit'
-  ) Load More
+  ) Load {{ loadXMore }} of {{ collections.length - this.idxLimit }} More
 </template>
 <script>
 import { defineComponent } from 'vue'
@@ -53,9 +53,18 @@ export default defineComponent({
   data() {
     return {
       collections: [],
-      idxLimit: 10,
+      idxLimit: 40,
       loading: false,
     }
+  },
+  computed: {
+    loadXMore() {
+      if (this.collections.length - this.idxLimit > 40) {
+        return 40
+      } else {
+        return this.collections.length - this.idxLimit
+      }
+    },
   },
   mounted() {
     this.getCollections()
