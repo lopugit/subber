@@ -15,12 +15,15 @@ const helpers = {
       return ''
     }
   },
+  titleise(name = '') {
+    return this.renderableName(name).replace(/(^\w|\s\w)/g, (m) =>
+      m.toUpperCase()
+    )
+  },
 }
 
 export default boot(({ app }) => {
-  app.config.globalProperties.apiName = helpers.apiName
-
-  app.config.globalProperties.renderableName = helpers.renderableName
+  Object.assign(app.config.globalProperties, helpers)
 })
 
 export { helpers }

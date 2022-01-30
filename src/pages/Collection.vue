@@ -18,5 +18,12 @@ export default defineComponent({
   data() {
     return {}
   },
+  mounted() {
+    document.title =
+      this.$store.state.subber.pageTitle +
+      ' - ' +
+      this.titleise(this.$route.params.collectionName) +
+      ' - Collection'
+  },
 })
 </script>

@@ -44,5 +44,8 @@ import { defineComponent } from 'vue'
 export default defineComponent({
   name: 'PrivacyPolicy',
   components: {},
+  mounted() {
+    document.title = this.$store.state.subber.pageTitle + ' - Privacy Policy'
+  },
 })
 </script>

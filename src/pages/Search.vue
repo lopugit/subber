@@ -18,5 +18,10 @@ export default defineComponent({
   data() {
     return {}
   },
+  mounted() {
+    if (this.$route.path === '/create') {
+      document.title = this.$store.state.subber.pageTitle + ' - Create'
+    }
+  },
 })
 </script>

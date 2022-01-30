@@ -7,6 +7,7 @@ export default function () {
       },
     ],
     embedded: false,
+    pageTitle: 'Subber',
   }
   window.state = state
   return state
