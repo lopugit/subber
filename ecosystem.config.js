@@ -3,6 +3,7 @@ module.exports = {
     {
       name: 'subber-dev',
       script: 'quasar dev',
+      namespace: 'subber',
     },
   ],
 }

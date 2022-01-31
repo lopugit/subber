@@ -14,7 +14,8 @@
       .collection-search.pt-24.flex.flex-col(v-if='currentCollectionName')
         .text-h4.capitalize(style='font-weight: 700')
           | {{ renderableName(currentCollectionName) }}
-        .views-count {{ collectionViews }} views
+        .author.text-light(v-if='collection') Made by {{ collection.author }}
+        .views-count.text-light {{ collectionViews }} views
       template(v-if='!currentCollectionName')
         .input-container.pt-12
           q-input.channel-search(

@@ -19,7 +19,8 @@
         router-link.capitalize.text-h5.text-bold(
           :to='"/collections/" + collection.name.replace(/ /gi, "-").toLowerCase()'
         ) {{ renderableName(collection.name) }}
-        .views-count {{ collection.views || 0 }} views
+        .author.text-light Made by {{ collection.author }}
+        .views-count.text-light {{ collection.views || 0 }} views
       q-card-section.flex-row.mw-100.flex-wrap
         .channel-icon.relative.mr-14.mb-8(
           v-for='(channel, channelIdx) in collection.channels'
