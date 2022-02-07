@@ -1,7 +1,7 @@
 <template lang="pug">
 .collections-list.l-container.pb-96.mt-48
   .mobile-spacing.or-create-your-own.pb-12
-    q-btn.full-width(color='primary', to='/create') Create your own
+    q-btn.full-width(color='accent', to='/create') Create your own
   .loader-spinner.w-full.flex-center.pb-12(v-if='loading')
     q-spinner(
       :style=`{
