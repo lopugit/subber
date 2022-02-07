@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: 'subber-dev',
+      name: 'subber-frontend',
       script: 'quasar dev',
       namespace: 'subber',
     },

@@ -11,7 +11,7 @@
     "stop.dev": "pm2 delete ecosystem.config.js --name subber-dev",
     "start.dev": "pm2 start ecosystem.config.js --name subber-dev",
     "build": "quasar build ; cp _redirects ./dist/spa/",
-    "log.dev": "pm2 log subber-dev",
+    "log.dev": "pm2 log subber-frontend",
     "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
