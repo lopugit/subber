@@ -5,6 +5,9 @@
     flexDirection: 'column',
     alignItems: 'center',
     width: '100%'
+  }`,
+  :class=`{
+    'all-text-black': (embed || $route.query.text === 'black') && $route.query.text !== 'white'
   }`
 )
   .latest-vids.l-container.pt-12(:style=`{
@@ -14,8 +17,8 @@
       .collection-search.pt-24.flex.flex-col(v-if='currentCollectionName')
         .text-h4.capitalize(style='font-weight: 700')
           | {{ renderableName(currentCollectionName) }}
-        .author.text-light(v-if='collection') Made by {{ collection.author }}
-        .views-count.text-light {{ collectionViews }} views
+        .author.text-light(v-if='collection && !embed') Made by {{ collection.author }}
+        .views-count.text-light(v-if='!embed') {{ collectionViews }} views
       template(v-if='!currentCollectionName')
         .input-container.pt-12
           q-input.channel-search(
@@ -71,27 +74,31 @@
             .clear-btn.flex.w-100.pt-12(v-if='searchResults.length')
               q-btn.ml-auto(@click='clearSearch', color='secondary') Clear
       .profile-pictures.pt-24.flex.flex-col.flex-wrap(v-if='channels.length')
-        .title {{ currentCollectionName ? 'Featured Channels' : 'Selected Channels' }}
+        .title(v-if='!embed') {{ currentCollectionName ? 'Featured Channels' : 'Selected Channels' }}
         .flex.flex-row
           template(v-for='channel in channels')
-            .channel-icon.relative.mr-16.mt-8
-              .channel-icon-inner
-                .channel-icon-img
-                  img(
-                    :src='channel.snippet.thumbnails.default.url',
-                    :style=`{
-                      width: '40px',
-                      height: '40px',
-                      borderRadius: '50%'
-                    }`
-                  )
+            a(
+              target='_blank',
+              :href='`https://youtube.com/channel/${channel.snippet.channelId}`'
+            )
+              .channel-icon.relative.mr-16.mt-8
+                .channel-icon-inner
+                  .channel-icon-img
+                    img(
+                      :src='channel.snippet.thumbnails.default.url',
+                      :style=`{
+                          width: '40px',
+                          height: '40px',
+                          borderRadius: '50%'
+                        }`
+                    )
                 q-btn.absolute.channel-remove-icon(
                   color='accent',
                   round,
                   dense,
                   size='xs',
                   @click='removeChannel(channel)',
-                  v-if='!currentCollectionName'
+                  v-if='!currentCollectionName && !embed'
                 )
                   q-icon(name='close')
       .save-as-container.pt-18(v-if='channels.length')
@@ -99,7 +106,8 @@
           q-btn.pl-12.pr-12(
             color='accent',
             dense,
-            @click='saveIntent = !saveIntent'
+            @click='saveIntent = !saveIntent',
+            v-if='!embed'
           ) {{ currentCollectionName ? 'Fork Collection' : 'Save Collection' }}
         q-dialog(
           v-model='saveIntent',
@@ -179,27 +187,12 @@
                     color='tertiary',
                     size='1.2em'
                   )
-      //- .collections-container.pt-24(
-      //-   v-if='collections.length && collections.length !== 1 && !currentCollectionName'
-      //- )
-      //-   .pb-12 Some suggested networks
-      //-   template(v-for='collection in collections')
-      //-     q-btn.pl-10.pr-10(
-      //-       v-if='collection.name',
-      //-       style='margin-right: 12px',
-      //-       outline,
-      //-       dense,
-      //-       rounded,
-      //-       color='accent',
-      //-       @click='addChannels(collection.channels || [])'
-      //-     )
-      //-       | {{ renderableName(collection.name) }}
       .error-container.pt-24(v-if='error')
         q-banner.bg-negative(color='error', rounded, inline-actions)
           | {{ error }}
           template(v-slot:action)
             q-btn(flat, label='Dismiss', @click='error = undefined')
-    grid(:videos='results', :loading='loading')
+    grid(:videos='results', :loading='loading', embed='embed')
 </template>
 <script>
 import { defineComponent } from 'vue'
@@ -217,6 +210,10 @@ export default defineComponent({
     currentCollectionName: {
       type: String,
       default: '',
+    },
+    embed: {
+      type: Boolean,
+      default: false,
     },
   },
   setup() {
@@ -300,6 +297,7 @@ export default defineComponent({
     },
   },
   async mounted() {
+    console.log(this.$route)
     await this.init()
   },
   methods: {

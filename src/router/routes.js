@@ -20,6 +20,29 @@ const routes = [
     children: [{ path: '', component: () => import('pages/Collection.vue') }],
   },
   {
+    path: '/embed/:collectionName',
+    component: () => import('src/layouts/EmbedLayout.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('pages/Collection.vue'),
+        props: {
+          embed: true,
+        },
+      },
+    ],
+  },
+  // {
+  //   path: '/embed-test',
+  //   component: () => import('src/layouts/MainLayout.vue'),
+  //   children: [
+  //     {
+  //       path: '',
+  //       component: () => import('pages/EmbedTest.vue'),
+  //     },
+  //   ],
+  // },
+  {
     path: '/privacy-policy',
     component: () => import('layouts/MainLayout.vue'),
     children: [

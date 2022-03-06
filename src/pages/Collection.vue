@@ -5,7 +5,7 @@ q-page.flex(
     alignItems: 'center'
   }`
 )
-  search(:currentCollectionName='$route.params.collectionName')
+  search(:embed='embed', :currentCollectionName='$route.params.collectionName')
 </template>
 <script>
 import { defineComponent } from 'vue'
@@ -14,6 +14,12 @@ export default defineComponent({
   name: 'PageIndex',
   components: {
     search,
+  },
+  props: {
+    embed: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {}
