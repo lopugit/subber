@@ -32,16 +32,16 @@ const routes = [
       },
     ],
   },
-  {
-    path: '/embed-test',
-    component: () => import('src/layouts/MainLayout.vue'),
-    children: [
-      {
-        path: '',
-        component: () => import('pages/EmbedTest.vue'),
-      },
-    ],
-  },
+  // {
+  //   path: '/embed-test',
+  //   component: () => import('src/layouts/MainLayout.vue'),
+  //   children: [
+  //     {
+  //       path: '',
+  //       component: () => import('pages/EmbedTest.vue'),
+  //     },
+  //   ],
+  // },
   {
     path: '/privacy-policy',
     component: () => import('layouts/MainLayout.vue'),
