@@ -12,7 +12,7 @@
       id="subber-iframe"
       width="100%"
       style="border: none !important"
-      src="https://subber-frontend.test/embed/simon-whistler-latest-content-feed?text=white"
+      src="http://subber-frontend.test/embed/simon-whistler-latest-content-feed?text=white"
     ></iframe>
     <!-- <iframe
       id="subber-iframe2"

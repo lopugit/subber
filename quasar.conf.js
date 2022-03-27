@@ -91,7 +91,10 @@ module.exports = configure(function (ctx) {
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
     devServer: {
       server: {
-        type: 'https',
+        type: 'http',
+      },
+      client: {
+        // webSocketURL: 'wss://localhost:' + env.PORT + '/ws',
       },
       port: env.PORT,
       open: true, // opens browser window automatically
