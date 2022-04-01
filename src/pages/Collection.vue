@@ -30,6 +30,9 @@ export default defineComponent({
       ' - ' +
       this.titleise(this.$route.params.collectionName) +
       ' - Collection'
+    if (this.$route.fullPath.includes('embed')) {
+      document.title += ' - Embed'
+    }
   },
 })
 </script>
