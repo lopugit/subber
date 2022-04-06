@@ -77,6 +77,8 @@ q-layout.bg-primary(view='lHh Lpr lFf')
             .creator.pb-4 Created By
             .creator Nikolaj Frey
             a.underline(href='mailto:nikolaj@alopu.com') nikolaj@alopu.com
+            .pt-6 Twitter
+            a.underline(href='https://twitter.com/lopudev') @lopudev
 </template>
 
 <script>
