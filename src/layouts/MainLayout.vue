@@ -59,17 +59,24 @@ q-layout(view='lHh Lpr lFf')
           q-item-label.pl-12 Google Privacy Policy
   q-page-container
     router-view
-  .footer.w-full.bg-primary.flex-center
-    q-list.footer-list.l-container
-      q-item
-        q-item-section
-          a(to='/privacy-policy') Privacy Policy
-      q-item
-        q-item-section
-          a(href='https://www.youtube.com/t/terms') YouTube Terms of Service
-      q-item
-        q-item-section
-          a(href='https://policies.google.com/privacy') Google Privacy Policy
+  .footer.w-full.bg-primary.flex-center.flex-row.pt-8.pb-8
+    .l-container.flex-row
+      q-list.footer-list
+        q-item
+          q-item-section
+            a(to='/privacy-policy') Privacy Policy
+        q-item
+          q-item-section
+            a(href='https://www.youtube.com/t/terms') YouTube Terms of Service
+        q-item
+          q-item-section
+            a(href='https://policies.google.com/privacy') Google Privacy Policy
+      q-list.footer-list
+        q-item
+          q-item-section
+            .creator.pb-4 Created By
+            .creator Nikolaj Frey
+            a.underline(href='mailto:nikolaj@alopu.com') nikolaj@alopu.com
 </template>
 
 <script>
