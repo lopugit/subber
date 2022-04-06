@@ -95,7 +95,7 @@ export default defineComponent({
     return {
       collections: [
         {
-          name: 'Simon Whistler',
+          name: 'Simon Whistler Latest Content Feed',
         },
         {
           name: 'XQC',
