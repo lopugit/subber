@@ -1,6 +1,6 @@
 <template lang="pug">
-q-layout(view='lHh Lpr lFf')
-  q-header.header
+q-layout.bg-primary(view='lHh Lpr lFf')
+  q-header.bg-dark
     q-toolbar
       q-btn(
         flat,
@@ -59,7 +59,7 @@ q-layout(view='lHh Lpr lFf')
           q-item-label.pl-12 Google Privacy Policy
   q-page-container
     router-view
-  .footer.w-full.bg-primary.flex-center.flex-row.pt-8.pb-8
+  .footer.w-full.bg-dark.flex-center.flex-row.pt-8.pb-8
     .l-container.flex-row
       q-list.footer-list
         q-item
@@ -110,9 +110,6 @@ export default defineComponent({
 })
 </script>
 <style lang="sass">
-.header
-  background: #202020
-
 @media (max-width: 481px)
   .app-description-container
     display: none

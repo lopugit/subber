@@ -39,7 +39,7 @@
         router-link.w-full(
           :to='"/collections/" + collection.name.replace(/ /gi, "-").toLowerCase()'
         )
-          q-btn.w-full(color='primary') Visit
+          q-btn.w-full(color='accent') Visit
   q-btn.mt-24.w-full(
     color='primary',
     @click='idxLimit += 40',
