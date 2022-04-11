@@ -4,7 +4,8 @@
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    width: '100%'
+    width: '100%',
+    background: 'white'
   }`,
   :class=`{
     'all-text-black': (embed || $route.query.text === 'black') && $route.query.text !== 'white'
@@ -17,6 +18,9 @@
       .collection-search.pt-24.flex.flex-col(v-if='currentCollectionName')
         .text-h4.capitalize(style='font-weight: 700')
           | {{ renderableName(currentCollectionName) }}
+        .text-light(v-if='embed') Made with
+          span.pl-4
+            a(href='https://ytsubber.com', target='_blank') ytsubber.com
         .author.text-light(v-if='collection && !embed') Made by {{ collection.author }}
         .views-count.text-light(v-if='!embed') {{ collectionViews }} views
       template(v-if='!currentCollectionName')
