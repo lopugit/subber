@@ -4,8 +4,7 @@
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    width: '100%',
-    background: 'white'
+    width: '100%'
   }`,
   :class=`{
     'all-text-black': (embed || $route.query.text === 'black') && $route.query.text !== 'white'
